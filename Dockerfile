@@ -16,15 +16,13 @@ RUN apt-get update && apt-get install -y \
 # Set working directory
 WORKDIR /app
 
-# Initialize Git LFS
-RUN git lfs install
-
 # Copy the source code and build script
 COPY . .
 
-# Pull LFS files and Build the shared library
-RUN git lfs pull && \
-    mkdir -p build && \
+# Build the shared library
+# Note: We skip 'git lfs pull' here because Render/CI often don't provide the .git directory in the build context.
+# Render's native Git LFS support should handle the file download before the build starts.
+RUN mkdir -p build && \
     cd build && \
     cmake .. && \
     make alien_llm_lib
