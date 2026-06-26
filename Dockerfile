@@ -27,15 +27,25 @@ RUN mkdir -p build && \
     make alien_llm_lib
 
 # Stage 2: Final runtime image
-FROM python:3.11-slim-bookworm
+FROM ubuntu:24.04
 
-# Install runtime dependencies for the C++ library
+# Prevent interactive prompts
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install Python and runtime dependencies
 RUN apt-get update && apt-get install -y \
+    python3 \
+    python3-pip \
+    python3-venv \
     libstdc++6 \
     && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
 WORKDIR /app
+
+# Create a virtual environment for Python
+RUN python3 -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
 
 # Copy built library from builder stage
 COPY --from=builder /app/build/libalien_llm_lib.so ./build/libalien_llm_lib.so
