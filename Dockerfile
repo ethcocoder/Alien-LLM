@@ -22,7 +22,8 @@ COPY . .
 # Build the shared library
 # Note: We skip 'git lfs pull' here because Render/CI often don't provide the .git directory in the build context.
 # Render's native Git LFS support should handle the file download before the build starts.
-RUN mkdir -p build && \
+RUN rm -rf build && \
+    mkdir -p build && \
     cd build && \
     cmake .. && \
     make alien_llm_lib
