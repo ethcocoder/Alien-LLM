@@ -1,6 +1,22 @@
 nohup: ignoring input
-INFO:     Started server process [3252]
+[BACKEND] Initializing Alien-LLM Model...
+[BACKEND] Loading tokenizer dataset from: datasets/TinyStories-valid.txt
+[BACKEND] Training tokenizer...
+[BACKEND] Tokenizer ready. Vocab size: 661
+[BACKEND] Checking checkpoint at: /home/ubuntu/Alien-LLM/model_checkpoint.bin
+[BACKEND] Loading checkpoint...
+[BACKEND] Checkpoint loaded successfully.
+[BACKEND] Model initialization complete.
+INFO:     Started server process [2678]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-INFO:     127.0.0.1:41596 - "POST /chat HTTP/1.1" 200 OK
+--- Alien-LLM Startup ---
+[INFO] Checking for shared library at: /home/ubuntu/Alien-LLM/build/libalien_llm_lib.so
+[INFO] Shared library found. Initializing AlienLLMInterface with checkpoint: /home/ubuntu/Alien-LLM/model_checkpoint.bin
+[SUCCESS] Model initialized successfully.
+-------------------------
+INFO:     127.0.0.1:38422 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38176 - "GET /health HTTP/1.1" 200 OK
+[CHAT] Received prompt: Hello Alien...
+INFO:     127.0.0.1:38188 - "POST /chat HTTP/1.1" 200 OK

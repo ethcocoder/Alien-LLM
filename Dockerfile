@@ -10,18 +10,21 @@ RUN apt-get update && apt-get install -y \
     cmake \
     libeigen3-dev \
     git \
+    git-lfs \
     && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
 WORKDIR /app
 
-# Copy the source code and build script
-COPY include/ ./include/
-COPY src/ ./src/
-COPY CMakeLists.txt ./
+# Initialize Git LFS
+RUN git lfs install
 
-# Build the shared library
-RUN mkdir -p build && \
+# Copy the source code and build script
+COPY . .
+
+# Pull LFS files and Build the shared library
+RUN git lfs pull && \
+    mkdir -p build && \
     cd build && \
     cmake .. && \
     make alien_llm_lib

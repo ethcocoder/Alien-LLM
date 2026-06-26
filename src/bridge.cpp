@@ -2,6 +2,7 @@
 #include <vector>
 #include <string>
 #include <memory>
+#include <fstream>
 #include "tokenizer.hpp"
 #include "orchestrator.hpp"
 #include "dataloader.hpp"
@@ -15,24 +16,43 @@ extern "C" {
 
     ModelInstance* create_model(const char* checkpoint_path, int d_model_ignored) {
         int d_model = 256; 
+        std::cout << "[BACKEND] Initializing Alien-LLM Model..." << std::endl;
+        
         ModelInstance* instance = new ModelInstance();
         instance->tokenizer = new Tokenizer();
         
         // Train tokenizer to ensure vocab is ready
-        std::string tinystories_text = DataLoader::load_text("datasets/TinyStories-valid.txt", 10000);
+        std::string dataset_path = "datasets/TinyStories-valid.txt";
+        std::cout << "[BACKEND] Loading tokenizer dataset from: " << dataset_path << std::endl;
+        
+        std::string tinystories_text = DataLoader::load_text(dataset_path, 10000);
+        if (tinystories_text.empty()) {
+            std::cerr << "[ERROR] Dataset not found or empty! Tokenizer training may fail." << std::endl;
+            // Fallback to minimal text to prevent crash if possible
+            tinystories_text = "The quick brown fox jumps over the lazy dog.";
+        }
+        
+        std::cout << "[BACKEND] Training tokenizer..." << std::endl;
         instance->tokenizer->train(tinystories_text);
+        std::cout << "[BACKEND] Tokenizer ready. Vocab size: " << instance->tokenizer->vocab_size() << std::endl;
 
         instance->model = new AI2Orchestrator(instance->tokenizer->vocab_size(), d_model);
         
         // Enable checkpoint loading
+        std::cout << "[BACKEND] Checking checkpoint at: " << checkpoint_path << std::endl;
         std::ifstream f(checkpoint_path, std::ios::binary);
         if (f.good()) {
+            std::cout << "[BACKEND] Loading checkpoint..." << std::endl;
             instance->model->load_checkpoint(checkpoint_path);
+            std::cout << "[BACKEND] Checkpoint loaded successfully." << std::endl;
+        } else {
+            std::cerr << "[WARNING] Checkpoint not found at " << checkpoint_path << ". Starting with random weights." << std::endl;
         }
         
         instance->task_emb = new Eigen::VectorXd(16);
         *instance->task_emb = Eigen::VectorXd::Random(16);
         
+        std::cout << "[BACKEND] Model initialization complete." << std::endl;
         return instance;
     }
 
