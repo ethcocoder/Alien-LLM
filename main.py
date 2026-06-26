@@ -19,12 +19,19 @@ app.add_middleware(
 )
 
 # Initialize model
-LIB_PATH = os.path.join(os.path.dirname(__file__), "build/libalien_llm_lib.so")
-CHECKPOINT_PATH = os.path.join(os.path.dirname(__file__), "model_checkpoint.bin")
-model = AlienLLMInterface(LIB_PATH, CHECKPOINT_PATH)
+model = None
+try:
+    LIB_PATH = os.path.join(os.path.dirname(__file__), "build/libalien_llm_lib.so")
+    CHECKPOINT_PATH = os.path.join(os.path.dirname(__file__), "model_checkpoint.bin")
+    if os.path.exists(LIB_PATH):
+        model = AlienLLMInterface(LIB_PATH, CHECKPOINT_PATH)
+    else:
+        print(f"Warning: Shared library not found at {LIB_PATH}")
+except Exception as e:
+    print(f"Error initializing model: {e}")
 
 # Serve static files
-# Note: We'll create the frontend directory and its contents later
+# For Vercel, we mount the 'frontend' directory as 'static'
 if os.path.exists("frontend"):
     app.mount("/static", StaticFiles(directory="frontend"), name="static")
 
@@ -44,9 +51,12 @@ async def chat(request: Request):
     prompt = data.get("message", "")
     
     async def event_generator():
-        for token in model.generate(prompt, max_tokens=50):
-            yield f"data: {json.dumps({'token': token})}\n\n"
-            await asyncio.sleep(0.05) # Simulate streaming delay
+        if model:
+            for token in model.generate(prompt, max_tokens=50):
+                yield f"data: {json.dumps({'token': token})}\n\n"
+                await asyncio.sleep(0.05) # Simulate streaming delay
+        else:
+            yield f"data: {json.dumps({'token': 'Error: Model not initialized. Shared library may be missing.'})}\n\n"
         yield "data: [DONE]\n\n"
 
     return StreamingResponse(event_generator(), media_type="text/event-stream")
