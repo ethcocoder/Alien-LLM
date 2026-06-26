@@ -1,0 +1,4 @@
+/home/ubuntu/Alien-LLM/build/CMakeFiles/alien_llm.dir
+/home/ubuntu/Alien-LLM/build/CMakeFiles/test.dir
+/home/ubuntu/Alien-LLM/build/CMakeFiles/edit_cache.dir
+/home/ubuntu/Alien-LLM/build/CMakeFiles/rebuild_cache.dir
