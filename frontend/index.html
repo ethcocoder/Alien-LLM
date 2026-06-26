@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alien Intelligence (AI2) - Chat</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+            overflow: hidden;
+        }
+
+        .morph-transition {
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-open {
+            width: 260px;
+        }
+
+        .sidebar-closed {
+            width: 0;
+            overflow: hidden;
+        }
+
+        #splash {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0f172a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 1s ease-out, visibility 1s;
+        }
+
+        .alien-loader {
+            width: 80px;
+            height: 80px;
+            border: 4px solid transparent;
+            border-top: 4px solid #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            position: relative;
+        }
+
+        .alien-loader::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+            border: 4px solid transparent;
+            border-top: 4px solid #8b5cf6;
+            border-radius: 50%;
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .message-enter {
+            animation: slideIn 0.3s ease-out forwards;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .typing-dot {
+            width: 6px;
+            height: 6px;
+            background: #94a3b8;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 3px;
+            animation: blink 1.4s infinite both;
+        }
+
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes blink {
+            0%, 80%, 100% { opacity: 0; }
+            40% { opacity: 1; }
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+    </style>
+</head>
+<body class="h-screen flex">
+
+    <!-- Splash Screen -->
+    <div id="splash">
+        <div class="text-center">
+            <div class="alien-loader mx-auto mb-4"></div>
+            <h1 class="text-2xl font-bold tracking-tighter text-blue-400">ALIEN INTELLIGENCE</h1>
+            <p class="text-slate-500 text-sm mt-2">Initializing Neural Core...</p>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar-open glass h-full flex flex-col transition-all duration-300 z-50">
+        <div class="p-6 flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+                <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/20">
+                    <i class="fas fa-brain text-white text-sm"></i>
+                </div>
+                <span class="font-bold text-lg tracking-tight">AI2</span>
+            </div>
+            <button onclick="toggleSidebar()" class="text-slate-400 hover:text-white">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+
+        <nav class="flex-1 px-4 space-y-2">
+            <a href="/" class="flex items-center space-x-3 p-3 rounded-xl bg-blue-600/10 text-blue-400 border border-blue-500/20">
+                <i class="fas fa-comment-dots"></i>
+                <span>Chat Interface</span>
+            </a>
+            <a href="/documentation" class="flex items-center space-x-3 p-3 rounded-xl hover:bg-slate-800 text-slate-400 hover:text-white transition-colors">
+                <i class="fas fa-book"></i>
+                <span>Documentation</span>
+            </a>
+        </nav>
+
+        <div class="p-4 border-t border-slate-800">
+            <div class="bg-slate-800/50 p-4 rounded-2xl">
+                <p class="text-xs text-slate-500 font-medium uppercase tracking-wider mb-2">System Status</p>
+                <div class="flex items-center space-x-2">
+                    <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                    <span class="text-sm text-slate-300">Model Online</span>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col relative overflow-hidden">
+        <!-- Header -->
+        <header class="h-16 flex items-center justify-between px-8 glass border-t-0 border-x-0">
+            <div class="flex items-center space-x-4">
+                <button id="sidebarToggleBtn" onclick="toggleSidebar()" class="text-slate-400 hover:text-white hidden">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h2 class="font-semibold text-slate-200">Neural Chat Session</h2>
+            </div>
+            <div class="flex items-center space-x-4">
+                <span class="text-xs bg-slate-800 text-slate-400 px-2 py-1 rounded border border-slate-700">v1.0.4-alien</span>
+                <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-600 to-purple-600 shadow-lg shadow-blue-500/20"></div>
+            </div>
+        </header>
+
+        <!-- Chat Area -->
+        <div id="chatMessages" class="flex-1 overflow-y-auto p-8 space-y-6">
+            <!-- Welcome Message -->
+            <div class="flex space-x-4 max-w-3xl">
+                <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center flex-shrink-0 shadow-lg shadow-blue-500/20">
+                    <i class="fas fa-robot text-white"></i>
+                </div>
+                <div class="bg-slate-800/50 p-5 rounded-2xl rounded-tl-none border border-slate-700/50 shadow-xl">
+                    <p class="text-slate-300 leading-relaxed">
+                        Welcome to the Alien Intelligence interface. I am an experimental LLM built on SSM and RFA architectures. How can I assist you today?
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Input Area -->
+        <div class="p-8">
+            <div class="max-w-4xl mx-auto relative">
+                <div class="absolute -top-12 left-0 w-full flex justify-center opacity-0 transition-opacity duration-300" id="typingIndicator">
+                    <div class="bg-slate-800 px-4 py-2 rounded-full border border-slate-700 text-xs text-slate-400 flex items-center">
+                        <span class="mr-2">Alien is thinking</span>
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                    </div>
+                </div>
+                <div class="glass rounded-2xl p-2 flex items-center shadow-2xl shadow-black/50 border border-white/5">
+                    <input type="text" id="userInput" placeholder="Ask anything to the Alien..." 
+                        class="flex-1 bg-transparent border-none focus:ring-0 px-4 text-slate-200 placeholder-slate-500">
+                    <button onclick="sendMessage()" class="bg-blue-600 hover:bg-blue-500 text-white w-12 h-12 rounded-xl transition-all flex items-center justify-center shadow-lg shadow-blue-600/20 active:scale-95">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+                <p class="text-center text-[10px] text-slate-600 mt-4 uppercase tracking-[0.2em]">
+                    Experimental Model • Powered by Alien-LLM Architecture
+                </p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Sidebar Toggle
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const btn = document.getElementById('sidebarToggleBtn');
+            if (sidebar.classList.contains('sidebar-open')) {
+                sidebar.classList.remove('sidebar-open');
+                sidebar.classList.add('sidebar-closed');
+                btn.classList.remove('hidden');
+            } else {
+                sidebar.classList.add('sidebar-open');
+                sidebar.classList.remove('sidebar-closed');
+                btn.classList.add('hidden');
+            }
+        }
+
+        // Hide Splash
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const splash = document.getElementById('splash');
+                splash.style.opacity = '0';
+                setTimeout(() => {
+                    splash.style.visibility = 'hidden';
+                }, 1000);
+            }, 2000);
+        });
+
+        // Chat Logic
+        const chatMessages = document.getElementById('chatMessages');
+        const userInput = document.getElementById('userInput');
+        const typingIndicator = document.getElementById('typingIndicator');
+
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+
+        async function sendMessage() {
+            const message = userInput.value.trim();
+            if (!message) return;
+
+            // Add User Message
+            addUserMessage(message);
+            userInput.value = '';
+            
+            // Show Typing Indicator
+            typingIndicator.classList.add('opacity-100');
+
+            try {
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message })
+                });
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let aiMessageDiv = addAiMessage("");
+                let aiText = "";
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    const chunk = decoder.decode(value);
+                    const lines = chunk.split('\n');
+                    
+                    for (const line of lines) {
+                        if (line.startsWith('data: ')) {
+                            const data = line.slice(6);
+                            if (data === '[DONE]') break;
+                            try {
+                                const parsed = JSON.parse(data);
+                                aiText += parsed.token + " ";
+                                aiMessageDiv.querySelector('.message-text').innerText = aiText;
+                                chatMessages.scrollTop = chatMessages.scrollHeight;
+                            } catch (e) {}
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            } finally {
+                typingIndicator.classList.remove('opacity-100');
+            }
+        }
+
+        function addUserMessage(text) {
+            const div = document.createElement('div');
+            div.className = 'flex justify-end message-enter';
+            div.innerHTML = `
+                <div class="bg-blue-600 p-5 rounded-2xl rounded-tr-none shadow-xl max-w-2xl border border-blue-500/30">
+                    <p class="text-white leading-relaxed">${text}</p>
+                </div>
+            `;
+            chatMessages.appendChild(div);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function addAiMessage(text) {
+            const div = document.createElement('div');
+            div.className = 'flex space-x-4 max-w-3xl message-enter';
+            div.innerHTML = `
+                <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center flex-shrink-0 shadow-lg shadow-blue-500/20">
+                    <i class="fas fa-robot text-white"></i>
+                </div>
+                <div class="bg-slate-800/50 p-5 rounded-2xl rounded-tl-none border border-slate-700/50 shadow-xl">
+                    <p class="message-text text-slate-300 leading-relaxed">${text}</p>
+                </div>
+            `;
+            chatMessages.appendChild(div);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            return div;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alien Intelligence (AI2) - Documentation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+        }
+
+        .glass {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-open {
+            width: 260px;
+        }
+
+        .sidebar-closed {
+            width: 0;
+            overflow: hidden;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="h-screen flex">
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar-open glass h-full flex flex-col transition-all duration-300 z-50 fixed lg:relative">
+        <div class="p-6 flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+                <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/20">
+                    <i class="fas fa-brain text-white text-sm"></i>
+                </div>
+                <span class="font-bold text-lg tracking-tight">AI2</span>
+            </div>
+            <button onclick="toggleSidebar()" class="text-slate-400 hover:text-white lg:hidden">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+
+        <nav class="flex-1 px-4 space-y-2">
+            <a href="/" class="flex items-center space-x-3 p-3 rounded-xl hover:bg-slate-800 text-slate-400 hover:text-white transition-colors">
+                <i class="fas fa-comment-dots"></i>
+                <span>Chat Interface</span>
+            </a>
+            <a href="/documentation" class="flex items-center space-x-3 p-3 rounded-xl bg-blue-600/10 text-blue-400 border border-blue-500/20">
+                <i class="fas fa-book"></i>
+                <span>Documentation</span>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 overflow-y-auto p-8 lg:p-12">
+        <div class="max-w-4xl mx-auto space-y-12">
+            <section>
+                <h1 class="text-4xl font-bold tracking-tighter mb-4 bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+                    Alien Intelligence Architecture
+                </h1>
+                <p class="text-lg text-slate-400 leading-relaxed">
+                    AI2 is a next-generation large language model architecture designed for extreme efficiency and reasoning capabilities. Unlike traditional Transformers, AI2 leverages State Space Models (SSM) and Recursive Feature Attention (RFA).
+                </p>
+            </section>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="glass p-6 rounded-2xl border border-blue-500/20">
+                    <div class="w-12 h-12 bg-blue-600/20 rounded-xl flex items-center justify-center mb-4">
+                        <i class="fas fa-microchip text-blue-400 text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">SSM Core</h3>
+                    <p class="text-slate-400 text-sm">
+                        Utilizes S4D layers for long-range dependency modeling with linear complexity, enabling massive context windows without the quadratic cost of attention.
+                    </p>
+                </div>
+                <div class="glass p-6 rounded-2xl border border-purple-500/20">
+                    <div class="w-12 h-12 bg-purple-600/20 rounded-xl flex items-center justify-center mb-4">
+                        <i class="fas fa-project-diagram text-purple-400 text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">RFA Mechanism</h3>
+                    <p class="text-slate-400 text-sm">
+                        Recursive Feature Attention provides a hybrid approach to focus on salient information while maintaining a compact state representation.
+                    </p>
+                </div>
+            </div>
+
+            <section class="space-y-6">
+                <h2 class="text-2xl font-bold">Key Components</h2>
+                <div class="space-y-4">
+                    <div class="flex items-start space-x-4 p-4 rounded-xl hover:bg-slate-800/50 transition-colors">
+                        <div class="text-blue-500 mt-1"><i class="fas fa-check-circle"></i></div>
+                        <div>
+                            <h4 class="font-medium">CHE Embedding</h4>
+                            <p class="text-slate-400 text-sm">Compact Hashed Embeddings reduce memory footprint by 75% while preserving semantic richness.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start space-x-4 p-4 rounded-xl hover:bg-slate-800/50 transition-colors">
+                        <div class="text-blue-500 mt-1"><i class="fas fa-check-circle"></i></div>
+                        <div>
+                            <h4 class="font-medium">ATA Controller</h4>
+                            <p class="text-slate-400 text-sm">Agility Meta-Controller dynamically adapts model parameters based on task complexity.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start space-x-4 p-4 rounded-xl hover:bg-slate-800/50 transition-colors">
+                        <div class="text-blue-500 mt-1"><i class="fas fa-check-circle"></i></div>
+                        <div>
+                            <h4 class="font-medium">SSOG Synthesizer</h4>
+                            <p class="text-slate-400 text-sm">Sparse Synthesizer of Gated experts handles final token generation with high precision.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <footer class="pt-12 border-t border-slate-800 text-center">
+                <p class="text-slate-500 text-sm">© 2026 Alien Intelligence Labs. All rights reserved.</p>
+            </footer>
+        </div>
+    </main>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            if (sidebar.classList.contains('sidebar-open')) {
+                sidebar.classList.remove('sidebar-open');
+                sidebar.classList.add('sidebar-closed');
+            } else {
+                sidebar.classList.add('sidebar-open');
+                sidebar.classList.remove('sidebar-closed');
+            }
+        }
+    </script>
+</body>
+</html>

@@ -8,7 +8,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/home/ubuntu/Alien-LLM/src/main.cpp" "CMakeFiles/alien_llm.dir/src/main.cpp.o" "gcc" "CMakeFiles/alien_llm.dir/src/main.cpp.o.d"
+  "/home/ubuntu/Alien-LLM/src/bridge.cpp" "CMakeFiles/alien_llm_lib.dir/src/bridge.cpp.o" "gcc" "CMakeFiles/alien_llm_lib.dir/src/bridge.cpp.o.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

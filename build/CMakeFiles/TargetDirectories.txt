@@ -1,4 +1,4 @@
-/content/Alien-LLM/build/CMakeFiles/alien_llm.dir
-/content/Alien-LLM/build/CMakeFiles/test.dir
-/content/Alien-LLM/build/CMakeFiles/edit_cache.dir
-/content/Alien-LLM/build/CMakeFiles/rebuild_cache.dir
+/home/ubuntu/Alien-LLM/build/CMakeFiles/alien_llm_lib.dir
+/home/ubuntu/Alien-LLM/build/CMakeFiles/alien_llm.dir
+/home/ubuntu/Alien-LLM/build/CMakeFiles/edit_cache.dir
+/home/ubuntu/Alien-LLM/build/CMakeFiles/rebuild_cache.dir
