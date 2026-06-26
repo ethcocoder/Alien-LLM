@@ -13,8 +13,8 @@ int main(int argc, char** argv) {
     std::string checkpoint_path = "model_checkpoint.bin";
 
     // 1. Data Loading
-    std::string tinystories_text = DataLoader::load_text("/home/ubuntu/datasets/TinyStories-valid.txt", 500000);
-    auto alpaca_raw = DataLoader::load_jsonl("/home/ubuntu/datasets/alpaca_data.jsonl", 500);
+    std::string tinystories_text = DataLoader::load_text("datasets/TinyStories-valid.txt", 500000);
+    auto alpaca_raw = DataLoader::load_jsonl("datasets/alpaca_data.jsonl", 500);
 
     // 2. Tokenizer
     Tokenizer tokenizer;

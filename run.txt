@@ -3,6 +3,9 @@
 
 echo "Starting Alien-LLM training continuation..."
 
+# Download datasets if they don't exist
+python3 download_datasets.py
+
 # Build the project if needed
 mkdir -p build
 cd build
