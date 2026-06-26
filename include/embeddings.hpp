@@ -25,6 +25,29 @@ public:
         return result;
     }
 
+    void save(std::ostream& os) const {
+        os.write((char*)&d_model, sizeof(d_model));
+        os.write((char*)&k_shards, sizeof(k_shards));
+        os.write((char*)&m_hash, sizeof(m_hash));
+        os.write((char*)&shard_dim, sizeof(shard_dim));
+        for (const auto& shard : shards) {
+            os.write((char*)shard.data(), shard.size() * sizeof(double));
+        }
+    }
+
+    static CHEEmbedding load(std::istream& is) {
+        int d_model, k_shards, m_hash, shard_dim;
+        is.read((char*)&d_model, sizeof(d_model));
+        is.read((char*)&k_shards, sizeof(k_shards));
+        is.read((char*)&m_hash, sizeof(m_hash));
+        is.read((char*)&shard_dim, sizeof(shard_dim));
+        CHEEmbedding emb(d_model, d_model, k_shards, m_hash);
+        for (auto& shard : emb.shards) {
+            is.read((char*)shard.data(), shard.size() * sizeof(double));
+        }
+        return emb;
+    }
+
 private:
     int d_model;
     int k_shards;

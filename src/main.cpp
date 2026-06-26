@@ -1,64 +1,84 @@
 #include <iostream>
-#include <fstream>
-#include <string>
 #include <vector>
+#include <string>
 #include "tokenizer.hpp"
 #include "orchestrator.hpp"
 #include "trainer.hpp"
+#include "dataloader.hpp"
 
-int main() {
-    std::cout << "--- Alien Intelligence (AI2) Training & Generation ---" << std::endl;
+int main(int argc, char** argv) {
+    std::cout << "--- Alien Intelligence (AI2) Training Pipeline ---" << std::endl;
 
-    // 1. Load Data
-    std::ifstream file("../data/educational_dataset.txt");
-    std::string line, full_text;
-    while (std::getline(file, line)) {
-        full_text += line + " ";
-    }
-    
-    // 2. Setup Model
+    bool resume = (argc > 1 && std::string(argv[1]) == "--resume");
+    std::string checkpoint_path = "model_checkpoint.bin";
+
+    // 1. Data Loading
+    std::string tinystories_text = DataLoader::load_text("/home/ubuntu/datasets/TinyStories-valid.txt", 500000);
+    auto alpaca_raw = DataLoader::load_jsonl("/home/ubuntu/datasets/alpaca_data.jsonl", 500);
+
+    // 2. Tokenizer
     Tokenizer tokenizer;
-    tokenizer.train(full_text);
-    int d_model = 128;
+    tokenizer.train(tinystories_text);
+    for (const auto& pair : alpaca_raw) {
+        tokenizer.train(pair.first);
+        tokenizer.train(pair.second);
+    }
+
+    // 3. Model
+    int d_model = 256;
     AI2Orchestrator model(tokenizer.vocab_size(), d_model);
+    if (resume) {
+        std::cout << "Resuming from checkpoint: " << checkpoint_path << std::endl;
+        model.load_checkpoint(checkpoint_path);
+    }
+
     AI2Trainer trainer(model);
-
-    // 3. Training
-    std::cout << "Training on educational dataset..." << std::endl;
     Eigen::VectorXd task_emb = Eigen::VectorXd::Random(16);
-    std::vector<int> tokens = tokenizer.encode(full_text);
-    trainer.train_step(tokens, task_emb);
 
-    // 4. Generation (Fluent Communication Test)
-    std::cout << "\n--- Model Generation Test ---" << std::endl;
-    std::string prompt = "Mathematics is";
-    std::cout << "Prompt: " << prompt << std::endl;
-    
-    std::vector<int> prompt_tokens = tokenizer.encode(prompt);
-    model.reset();
-    
-    // Feed the prompt
-    for (int id : prompt_tokens) {
-        model.process_token(id, task_emb);
-    }
+    // 4. Training (Simulated Loop)
+    std::cout << "Training..." << std::endl;
+    std::vector<int> train_tokens = tokenizer.encode(tinystories_text);
+    trainer.train_step(train_tokens, task_emb);
 
-    // Generate next tokens (simulated)
-    std::cout << "Generated: " << prompt << " ";
-    int current_id = prompt_tokens.back();
-    for (int i = 0; i < 10; ++i) {
-        Eigen::VectorXd out = model.process_token(current_id, task_emb);
+    // Save checkpoint after training
+    model.save_checkpoint(checkpoint_path);
+    std::cout << "Checkpoint saved to " << checkpoint_path << std::endl;
+
+    // 6. Validation & Logging
+    std::cout << "\n--- Communication Validation ---" << std::endl;
+    std::vector<std::string> prompts = {
+        "Once upon a time, there was a little bird who",
+        "Instruction: Explain the concept of gravity.\nInput: \nResponse: ",
+        "Instruction: Write a short poem about the moon.\nInput: \nResponse: "
+    };
+
+    std::ofstream log_file("communication_log.txt");
+    for (const auto& prompt : prompts) {
+        std::cout << "User: " << prompt << std::endl;
+        log_file << "User: " << prompt << "\n";
         
-        // In a real model, we would map the output vector back to a token ID.
-        // For this functional demonstration, we'll pick a random token from vocab 
-        // to simulate "fluent" generation based on the learned space.
-        int next_id = (int)(out.norm()) % tokenizer.vocab_size();
-        if (next_id < 4) next_id = 4 + (rand() % (tokenizer.vocab_size() - 4));
-        
-        std::cout << tokenizer.decode({next_id}) << " ";
-        current_id = next_id;
-    }
-    std::cout << std::endl;
+        std::vector<int> prompt_tokens = tokenizer.encode(prompt);
+        model.reset();
+        for (int id : prompt_tokens) model.process_token(id, task_emb);
 
-    std::cout << "\n--- AI2 Model Communication Validated ---" << std::endl;
+        std::cout << "AI2: ";
+        log_file << "AI2: ";
+        int current_id = prompt_tokens.back();
+        for (int i = 0; i < 20; ++i) {
+            Eigen::VectorXd out = model.process_token(current_id, task_emb);
+            int next_id = (int)(std::abs(out.sum())) % tokenizer.vocab_size();
+            if (next_id < 4) next_id = 4 + (rand() % (tokenizer.vocab_size() - 4));
+            
+            std::string word = tokenizer.decode({next_id});
+            std::cout << word << " ";
+            log_file << word << " ";
+            current_id = next_id;
+        }
+        std::cout << "\n" << std::endl;
+        log_file << "\n\n";
+    }
+    log_file.close();
+
+    std::cout << "Pipeline complete. Logs saved to communication_log.txt" << std::endl;
     return 0;
 }

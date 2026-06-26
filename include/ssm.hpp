@@ -40,6 +40,20 @@ public:
         state = Eigen::VectorXcd::Zero(d_state);
     }
 
+    void save(std::ostream& os) const {
+        os.write((char*)Lambda.data(), Lambda.size() * sizeof(std::complex<double>));
+        os.write((char*)B.data(), B.size() * sizeof(std::complex<double>));
+        os.write((char*)C.data(), C.size() * sizeof(std::complex<double>));
+        os.write((char*)D.data(), D.size() * sizeof(double));
+    }
+
+    void load(std::istream& is) {
+        is.read((char*)Lambda.data(), Lambda.size() * sizeof(std::complex<double>));
+        is.read((char*)B.data(), B.size() * sizeof(std::complex<double>));
+        is.read((char*)C.data(), C.size() * sizeof(std::complex<double>));
+        is.read((char*)D.data(), D.size() * sizeof(double));
+    }
+
 private:
     int d_model;
     int d_state;

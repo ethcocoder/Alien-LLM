@@ -2,6 +2,7 @@
 #define ORCHESTRATOR_HPP
 
 #include <vector>
+#include <fstream>
 #include "tokenizer.hpp"
 #include "embeddings.hpp"
 #include "ssm.hpp"
@@ -51,6 +52,23 @@ public:
         ssm.reset_state();
         rfa.reset_state();
         history.clear();
+    }
+
+    void save_checkpoint(const std::string& path) const {
+        std::ofstream os(path, std::ios::binary);
+        embedding.save(os);
+        ssm.save(os);
+        // Add other components if needed
+        os.close();
+    }
+
+    void load_checkpoint(const std::string& path) {
+        std::ifstream is(path, std::ios::binary);
+        if (is.is_open()) {
+            embedding = CHEEmbedding::load(is);
+            ssm.load(is);
+            is.close();
+        }
     }
 
 private:

@@ -1,0 +1,15 @@
+#!/bin/bash
+# Alien Intelligence (AI2) Continuation Script
+
+echo "Starting Alien-LLM training continuation..."
+
+# Build the project if needed
+mkdir -p build
+cd build
+cmake ..
+make
+
+# Run the model with the resume flag
+./alien_llm --resume
+
+echo "Training session complete."
