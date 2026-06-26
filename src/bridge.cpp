@@ -14,21 +14,21 @@ extern "C" {
     } ModelInstance;
 
     ModelInstance* create_model(const char* checkpoint_path, int d_model_ignored) {
-        int d_model = 32; // Further reduced
+        int d_model = 256; 
         ModelInstance* instance = new ModelInstance();
         instance->tokenizer = new Tokenizer();
         
-        // Train tokenizer with some default text to build initial vocab
-        // In a real scenario, the tokenizer should also be saved/loaded
+        // Train tokenizer to ensure vocab is ready
         std::string tinystories_text = DataLoader::load_text("datasets/TinyStories-valid.txt", 10000);
         instance->tokenizer->train(tinystories_text);
 
         instance->model = new AI2Orchestrator(instance->tokenizer->vocab_size(), d_model);
-        // Checkpoint loading disabled in sandbox due to memory constraints
-        // std::ifstream f(checkpoint_path);
-        // if (f.good()) {
-        //     instance->model->load_checkpoint(checkpoint_path);
-        // }
+        
+        // Enable checkpoint loading
+        std::ifstream f(checkpoint_path, std::ios::binary);
+        if (f.good()) {
+            instance->model->load_checkpoint(checkpoint_path);
+        }
         
         instance->task_emb = new Eigen::VectorXd(16);
         *instance->task_emb = Eigen::VectorXd::Random(16);
