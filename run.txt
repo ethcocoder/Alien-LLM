@@ -21,15 +21,16 @@ make -j$(nproc)
 
 
 # Run the model
-echo "[COLAB] Starting Training (Standard)..."
+echo "[COLAB] Starting Training (QUICK MODE)..."
 cd ..
 
 # RUN OPTIONS:
-# For small test: ./build/alien_llm --quick
+# For full training: ./build/alien_llm
 # For resume: ./build/alien_llm --resume
-# For standard: ./build/alien_llm
+# For quick test: ./build/alien_llm --quick
 
-./build/alien_llm
+./build/alien_llm --quick
+
 
 
 
