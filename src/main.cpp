@@ -87,6 +87,7 @@ int main(int argc, char** argv) {
             
             // Softmax with Temperature
             float temp = 0.8f;
+            logits.array() -= logits.maxCoeff();
             Eigen::VectorXf probs = (logits.array() / temp).exp();
             probs /= probs.sum();
             

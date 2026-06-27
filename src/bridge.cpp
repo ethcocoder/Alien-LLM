@@ -73,8 +73,10 @@ extern "C" {
         
         // Softmax sampling
         float temp = 0.8f;
+        logits.array() -= logits.maxCoeff();
         Eigen::VectorXf probs = (logits.array() / temp).exp();
         probs /= probs.sum();
+
         
         float r = (float)rand() / (float)RAND_MAX;
         int next_id = 0;

@@ -18,8 +18,10 @@ public:
             Eigen::VectorXf logits = model.process_token(tokens[i], task_emb);
             int target = tokens[i+1];
             
-            // 1. Softmax
+            // 1. Stable Softmax
+            logits.array() -= logits.maxCoeff();
             Eigen::VectorXf probs = logits.array().exp() / logits.array().exp().sum();
+
             
             // 2. Cross-Entropy Loss (NLL)
             float loss = -std::log(std::max(probs(target), 1e-9f));

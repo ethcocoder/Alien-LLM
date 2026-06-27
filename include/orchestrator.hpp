@@ -49,17 +49,19 @@ public:
         Eigen::VectorXf h = 0.5f * h_ssm + 0.5f * h_rfa;
         h = layer_norm(h);
 
-        // Reasoning
+        // Reasoning (Bottleneck to 32 dimensions)
         history.push_back(h);
         if (history.size() > 5) history.erase(history.begin());
         Eigen::VectorXf h_reason = stre.forward(history);
 
-        // Synthesis to logits
-        this->last_h_reason = h_reason;
+        // Synthesis (Expand back to d_model=256 dimensions)
+        Eigen::VectorXf h_final = ssog.forward(h_reason);
+        this->last_h_reason = h_final; // Renamed logic: this is actually the final hidden state before W_out
         
-        Eigen::VectorXf logits = W_out * h_reason;
+        Eigen::VectorXf logits = W_out * h_final;
         return logits;
     }
+
 
 
     Eigen::VectorXf layer_norm(const Eigen::VectorXf& x) {
