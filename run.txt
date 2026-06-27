@@ -20,7 +20,9 @@ cmake .. -DCMAKE_BUILD_TYPE=Release
 make -j$(nproc)
 
 
-# Run the model
+# Run the model (Run from root so relative paths to datasets/ work)
 echo "[COLAB] Starting Training..."
-./alien_llm --resume
+cd ..
+./build/alien_llm --resume
+
 

@@ -19,6 +19,11 @@ int main(int argc, char** argv) {
     auto alpaca_raw = DataLoader::load_jsonl("datasets/alpaca_data.jsonl", 500);
 
     // 2. Tokenizer
+    if (tinystories_text.empty()) {
+        std::cerr << "[FATAL] Dataset is empty! Please check if 'datasets/TinyStories-valid.txt' exists." << std::endl;
+        return 1;
+    }
+
     Tokenizer tokenizer;
     tokenizer.train(tinystories_text);
     for (const auto& pair : alpaca_raw) {
@@ -27,6 +32,11 @@ int main(int argc, char** argv) {
     }
 
     // 3. Model
+    if (tokenizer.vocab_size() == 0) {
+        std::cerr << "[FATAL] Tokenizer training failed (vocab size 0)." << std::endl;
+        return 1;
+    }
+
     int d_model = 256;
     AI2Orchestrator model(tokenizer.vocab_size(), d_model);
     if (resume) {
@@ -40,11 +50,16 @@ int main(int argc, char** argv) {
     // 4. Training (Simulated Loop)
     std::cout << "Training..." << std::endl;
     std::vector<int> train_tokens = tokenizer.encode(tinystories_text);
+    if (train_tokens.empty()) {
+        std::cerr << "[FATAL] Tokenization failed." << std::endl;
+        return 1;
+    }
     trainer.train_step(train_tokens, task_emb);
 
     // Save checkpoint after training
     model.save_checkpoint(checkpoint_path);
     std::cout << "Checkpoint saved to " << checkpoint_path << std::endl;
+
 
     // 6. Validation & Logging
     std::cout << "\n--- Communication Validation ---" << std::endl;

@@ -5,30 +5,16 @@
 [ 50%] Built target alien_llm_lib
 [ 66%] Building CXX object CMakeFiles/test_checkpoint.dir/scratch/test_checkpoint.cpp.o
 [ 83%] Linking CXX executable alien_llm
-In file included from /usr/include/eigen3/Eigen/Core:164,
-                 from /usr/include/eigen3/Eigen/Dense:1,
-                 from /content/Alien-LLM/include/embeddings.hpp:5,
-                 from /content/Alien-LLM/include/orchestrator.hpp:8,
-                 from /content/Alien-LLM/scratch/test_checkpoint.cpp:5:
-/usr/include/eigen3/Eigen/src/Core/AssignEvaluator.h: In instantiation of ‘void Eigen::internal::call_assignment_no_alias(Dst&, const Src&, const Func&) [with Dst = Eigen::Matrix<float, -1, 1>; Src = Eigen::Matrix<double, -1, 1>; Func = Eigen::internal::assign_op<float, double>]’:
-/usr/include/eigen3/Eigen/src/Core/PlainObjectBase.h:797:41:   required from ‘Derived& Eigen::PlainObjectBase<Derived>::_set_noalias(const Eigen::DenseBase<OtherDerived>&) [with OtherDerived = Eigen::Matrix<double, -1, 1>; Derived = Eigen::Matrix<float, -1, 1>]’
-/usr/include/eigen3/Eigen/src/Core/PlainObjectBase.h:594:19:   required from ‘Eigen::PlainObjectBase<Derived>::PlainObjectBase(const Eigen::DenseBase<OtherDerived>&) [with OtherDerived = Eigen::Matrix<double, -1, 1>; Derived = Eigen::Matrix<float, -1, 1>]’
-/usr/include/eigen3/Eigen/src/Core/Matrix.h:423:29:   required from ‘Eigen::Matrix<_Scalar, _Rows, _Cols, _Options, _MaxRows, _MaxCols>::Matrix(const Eigen::EigenBase<OtherDerived>&) [with OtherDerived = Eigen::Matrix<double, -1, 1>; _Scalar = float; int _Rows = -1; int _Cols = 1; int _Options = 0; int _MaxRows = -1; int _MaxCols = 1]’
-/content/Alien-LLM/scratch/test_checkpoint.cpp:20:48:   required from here
-/usr/include/eigen3/Eigen/src/Core/AssignEvaluator.h:888:3: error: static assertion failed: YOU_MIXED_DIFFERENT_NUMERIC_TYPES__YOU_NEED_TO_USE_THE_CAST_METHOD_OF_MATRIXBASE_TO_CAST_NUMERIC_TYPES_EXPLICITLY
-  888 |   EIGEN_CHECK_BINARY_COMPATIBILIY(Func,typename ActualDstTypeCleaned::Scalar,typename Src::Scalar);
-      |   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/usr/include/eigen3/Eigen/src/Core/AssignEvaluator.h:888:3: note: ‘Eigen::internal::has_ReturnType<Eigen::ScalarBinaryOpTraits<float, double, Eigen::internal::assign_op<float, double> > >::value’ evaluates to false
-/usr/include/eigen3/Eigen/src/Core/AssignEvaluator.h: In instantiation of ‘void Eigen::internal::call_assignment_no_alias(Dst&, const Src&, const Func&) [with Dst = Eigen::Matrix<double, -1, 1>; Src = Eigen::Matrix<float, -1, 1>; Func = Eigen::internal::assign_op<double, float>]’:
-/usr/include/eigen3/Eigen/src/Core/PlainObjectBase.h:797:41:   required from ‘Derived& Eigen::PlainObjectBase<Derived>::_set_noalias(const Eigen::DenseBase<OtherDerived>&) [with OtherDerived = Eigen::Matrix<float, -1, 1>; Derived = Eigen::Matrix<double, -1, 1>]’
-/usr/include/eigen3/Eigen/src/Core/PlainObjectBase.h:594:19:   required from ‘Eigen::PlainObjectBase<Derived>::PlainObjectBase(const Eigen::DenseBase<OtherDerived>&) [with OtherDerived = Eigen::Matrix<float, -1, 1>; Derived = Eigen::Matrix<double, -1, 1>]’
-/usr/include/eigen3/Eigen/src/Core/Matrix.h:423:29:   required from ‘Eigen::Matrix<_Scalar, _Rows, _Cols, _Options, _MaxRows, _MaxCols>::Matrix(const Eigen::EigenBase<OtherDerived>&) [with OtherDerived = Eigen::Matrix<float, -1, 1>; _Scalar = double; int _Rows = -1; int _Cols = 1; int _Options = 0; int _MaxRows = -1; int _MaxCols = 1]’
-/content/Alien-LLM/scratch/test_checkpoint.cpp:20:69:   required from here
-/usr/include/eigen3/Eigen/src/Core/AssignEvaluator.h:888:3: error: static assertion failed: YOU_MIXED_DIFFERENT_NUMERIC_TYPES__YOU_NEED_TO_USE_THE_CAST_METHOD_OF_MATRIXBASE_TO_CAST_NUMERIC_TYPES_EXPLICITLY
-/usr/include/eigen3/Eigen/src/Core/AssignEvaluator.h:888:3: note: ‘Eigen::internal::has_ReturnType<Eigen::ScalarBinaryOpTraits<double, float, Eigen::internal::assign_op<double, float> > >::value’ evaluates to false
 [ 83%] Built target alien_llm
-make[2]: *** [CMakeFiles/test_checkpoint.dir/build.make:79: CMakeFiles/test_checkpoint.dir/scratch/test_checkpoint.cpp.o] Error 1
-make[1]: *** [CMakeFiles/Makefile2:157: CMakeFiles/test_checkpoint.dir/all] Error 2
-make: *** [Makefile:91: all] Error 2
+[100%] Linking CXX executable test_checkpoint
+[100%] Built target test_checkpoint
+[COLAB] Starting Training...
+--- Alien Intelligence (AI2) Training Pipeline ---
+Failed to open file: datasets/TinyStories-valid.txt
+Failed to open file: datasets/alpaca_data.jsonl
+Resuming from checkpoint: model_checkpoint.bin
+[ERROR] Could not open model_checkpoint.bin for reading.
+Training...
+run.txt: line 25:  6888 Segmentation fault      (core dumped) ./alien_llm --resume
 /content/Alien-LLM# 
-[0] 0:bash*                                                                                  "d4b0dd7e6c99" 08:24 27-Jun-26
+[0] 0:bash*               
