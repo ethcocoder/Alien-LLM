@@ -24,6 +24,11 @@ class AlienInference:
 
     def load_model(self, path):
         with open(path, 'rb') as f:
+            # 0. Global Headers
+            self.vocab_size = struct.unpack('i', f.read(4))[0]
+            self.d_model = struct.unpack('i', f.read(4))[0]
+            self.d_state = 32 # Balanced default for Blitz mode
+            
             # 1. Embedding
             self.emb_d_model = struct.unpack('i', f.read(4))[0]
             self.emb_k_shards = struct.unpack('i', f.read(4))[0]
@@ -36,39 +41,42 @@ class AlienInference:
                 self.shards.append(shard_data.reshape(self.emb_m_hash, self.emb_shard_dim, order='F'))
 
             # 2. SSM (S4D)
-            # Order: Lambda, B, C, D
-            # Lambda is complex (2 * d_state)
-            lambda_data = np.frombuffer(f.read(32 * 2 * 4), dtype=np.float32)
+            lambda_data = np.frombuffer(f.read(self.d_state * 2 * 4), dtype=np.float32)
             self.ssm_lambda = lambda_data[::2] + 1j * lambda_data[1::2]
             
-            self.ssm_B = np.frombuffer(f.read(32 * 256 * 2 * 4), dtype=np.float32).view(np.complex64).reshape(32, 256, order='F')
-            self.ssm_C = np.frombuffer(f.read(256 * 32 * 2 * 4), dtype=np.float32).view(np.complex64).reshape(256, 32, order='F')
-            self.ssm_D = np.frombuffer(f.read(256 * 4), dtype=np.float32)
-            self.ssm_state = np.zeros(32, dtype=np.complex64)
+            self.ssm_B = np.frombuffer(f.read(self.d_state * self.d_model * 2 * 4), dtype=np.float32).view(np.complex64).reshape(self.d_state, self.d_model, order='F')
+            self.ssm_C = np.frombuffer(f.read(self.d_model * self.d_state * 2 * 4), dtype=np.float32).view(np.complex64).reshape(self.d_model, self.d_state, order='F')
+            self.ssm_D = np.frombuffer(f.read(self.d_model * 4), dtype=np.float32)
+            self.ssm_state = np.zeros(self.d_state, dtype=np.complex64)
 
             # 3. RFA
-            self.rfa_W = np.frombuffer(f.read(16 * 256 * 4), dtype=np.float32).reshape(16, 256, order='F')
-            self.rfa_num = np.zeros((16, 256), dtype=np.float32)
-            self.rfa_den = np.zeros(16, dtype=np.float32)
+            rfa_features = 16
+            self.rfa_W = np.frombuffer(f.read(rfa_features * self.d_model * 4), dtype=np.float32).reshape(rfa_features, self.d_model, order='F')
+            self.rfa_num = np.zeros((rfa_features, self.d_model), dtype=np.float32)
+            self.rfa_den = np.zeros(rfa_features, dtype=np.float32)
 
             # 4. STRE (Sheaf)
-            self.stre_W_res = np.frombuffer(f.read(32 * 32 * 4), dtype=np.float32).reshape(32, 32, order='F')
-            self.stre_W_node = np.frombuffer(f.read(32 * 256 * 4), dtype=np.float32).reshape(32, 256, order='F')
+            self.stre_W_res = np.frombuffer(f.read(self.d_state * self.d_state * 4), dtype=np.float32).reshape(self.d_state, self.d_state, order='F')
+            self.stre_W_node = np.frombuffer(f.read(self.d_state * self.d_model * 4), dtype=np.float32).reshape(self.d_state, self.d_model, order='F')
 
             # 5. ATA
-            self.ata_W = np.frombuffer(f.read(256 * 256 * 16 * 4), dtype=np.float32).reshape(256, 256, 16, order='F')
+            self.ata_W = np.frombuffer(f.read(self.d_model * self.d_model * 16 * 4), dtype=np.float32).reshape(self.d_model, self.d_model, 16, order='F')
 
             # 6. SSOG (Synthesizer/Experts)
+            n_experts = 8
             self.experts = []
-            for _ in range(8):
-                self.experts.append(np.frombuffer(f.read(256 * 32 * 4), dtype=np.float32).reshape(256, 32, order='F'))
-            self.ssog_W_gate = np.frombuffer(f.read(8 * 32 * 4), dtype=np.float32).reshape(8, 32, order='F')
+            for _ in range(n_experts):
+                self.experts.append(np.frombuffer(f.read(self.d_model * self.d_state * 4), dtype=np.float32).reshape(self.d_model, self.d_state, order='F'))
+            self.ssog_W_gate = np.frombuffer(f.read(n_experts * self.d_state * 4), dtype=np.float32).reshape(n_experts, self.d_state, order='F')
 
             # 7. UQ
-            self.uq_W = np.frombuffer(f.read(256 * 1 * 4), dtype=np.float32).reshape(1, 256, order='F')
+            self.uq_W = np.frombuffer(f.read(self.d_model * 1 * 4), dtype=np.float32).reshape(1, self.d_model, order='F')
 
             # 8. Brain
-            self.W_out = np.frombuffer(f.read(self.vocab_size * 256 * 4), dtype=np.float32).reshape(self.vocab_size, 256, order='F')
+            self.W_out = np.frombuffer(f.read(self.vocab_size * self.d_model * 4), dtype=np.float32).reshape(self.vocab_size, self.d_model, order='F')
+            self.gamma = np.frombuffer(f.read(self.d_model * 4), dtype=np.float32)
+            self.beta = np.frombuffer(f.read(self.d_model * 4), dtype=np.float32)
+
 
             self.gamma = np.frombuffer(f.read(256 * 4), dtype=np.float32)
             self.beta = np.frombuffer(f.read(256 * 4), dtype=np.float32)

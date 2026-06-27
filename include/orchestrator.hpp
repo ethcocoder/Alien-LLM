@@ -17,13 +17,14 @@ class AI2Orchestrator {
 public:
     AI2Orchestrator(int vocab_size, int d_model) 
         : embedding(vocab_size, d_model),
-          ssm(d_model, 128),     // Scaled SSM memory
-          rfa(d_model, 128),     // Scaled Attention features
-          stre(d_model, 128),    // Scaled Reasoning sheaf
+          ssm(d_model, 32),     
+          rfa(d_model, 16),     
+          stre(d_model, 32),    
           ata(16, d_model),
-          ssog(128, d_model, 64, 4) { // Huge Expert Synthesis (64 Experts)
+          ssog(32, d_model, 8, 2) { 
         this->d_model = d_model;
         this->vocab_size = vocab_size;
+
 
         
         // Output Layer (The "Brain")
@@ -120,10 +121,12 @@ public:
 
     void save_checkpoint(const std::string& path) const {
         std::ofstream os(path, std::ios::binary);
-        if (!os.is_open()) {
-            std::cerr << "[ERROR] Could not open " << path << " for writing." << std::endl;
-            return;
-        }
+        if (!os.is_open()) return;
+
+        // Header: Global Dimensions
+        os.write((char*)&vocab_size, sizeof(int));
+        os.write((char*)&d_model, sizeof(int));
+
         embedding.save(os);
         ssm.save(os);
         rfa.save(os);
@@ -136,14 +139,15 @@ public:
         os.write((char*)W_out.data(), W_out.size() * sizeof(float));
         os.write((char*)gamma.data(), gamma.size() * sizeof(float));
         os.write((char*)beta.data(), beta.size() * sizeof(float));
-        
-        os.close();
     }
 
     void load_checkpoint(const std::string& path) {
         std::ifstream is(path, std::ios::binary);
         if (is.is_open()) {
-            embedding = CHEEmbedding::load(is);
+            is.read((char*)&vocab_size, sizeof(int));
+            is.read((char*)&d_model, sizeof(int));
+
+            embedding.load(is);
             ssm.load(is);
             rfa.load(is);
             stre.load(is);
@@ -151,16 +155,12 @@ public:
             ssog.load(is);
             uq.load(is);
             
-            // Load Brain weights
             is.read((char*)W_out.data(), W_out.size() * sizeof(float));
             is.read((char*)gamma.data(), gamma.size() * sizeof(float));
             is.read((char*)beta.data(), beta.size() * sizeof(float));
-            
-            is.close();
-        } else {
-            std::cerr << "[ERROR] Could not open " << path << " for reading." << std::endl;
         }
     }
+
 
 private:
     int d_model;
