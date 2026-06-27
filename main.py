@@ -5,9 +5,9 @@ from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
-from interface import AlienLLMInterface
+from alien_inference import AlienInference
 
-app = FastAPI()
+app = FastAPI(title="Alien Intelligence (AI2)")
 
 # Enable CORS
 app.add_middleware(
@@ -18,37 +18,41 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Initialize model
+# Initialize model using pure Python inference (no C++ needed)
 model = None
-print("--- Alien-LLM Startup ---")
+print("--- Alien-LLM Startup (Pure Python Mode) ---")
 try:
-    LIB_PATH = os.path.join(os.path.dirname(__file__), "build/libalien_llm_lib.so")
-    CHECKPOINT_PATH = os.path.join(os.path.dirname(__file__), "model_checkpoint.bin")
-    
-    print(f"[INFO] Checking for shared library at: {LIB_PATH}")
-    if os.path.exists(LIB_PATH):
-        print(f"[INFO] Shared library found. Initializing AlienLLMInterface with checkpoint: {CHECKPOINT_PATH}")
-        model = AlienLLMInterface(LIB_PATH, CHECKPOINT_PATH)
-        print("[SUCCESS] Model initialized successfully.")
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    VOCAB_PATH = os.path.join(BASE_DIR, "vocab.txt")
+    CHECKPOINT_PATH = os.path.join(BASE_DIR, "model_checkpoint.bin")
+
+    if os.path.exists(VOCAB_PATH) and os.path.exists(CHECKPOINT_PATH):
+        print(f"[INFO] Loading vocab from: {VOCAB_PATH}")
+        print(f"[INFO] Loading checkpoint from: {CHECKPOINT_PATH}")
+        model = AlienInference(VOCAB_PATH, CHECKPOINT_PATH)
+        print("[SUCCESS] Model initialized successfully (Pure Python).")
     else:
-        print(f"[ERROR] Shared library not found at {LIB_PATH}. Please run build_cpp.sh first.")
+        missing = []
+        if not os.path.exists(VOCAB_PATH): missing.append("vocab.txt")
+        if not os.path.exists(CHECKPOINT_PATH): missing.append("model_checkpoint.bin")
+        print(f"[ERROR] Missing files: {', '.join(missing)}")
 except Exception as e:
     print(f"[CRITICAL] Error initializing model: {e}")
-print("-------------------------")
+    import traceback
+    traceback.print_exc()
+print("---------------------------------------------")
 
-# Serve static files
-# For Vercel, we mount the 'frontend' directory as 'static'
-if os.path.exists("frontend"):
-    app.mount("/static", StaticFiles(directory="frontend"), name="static")
+# Serve frontend static files
+FRONTEND_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "frontend")
 
 @app.get("/", response_class=HTMLResponse)
 async def read_root():
-    with open("frontend/index.html", "r") as f:
+    with open(os.path.join(FRONTEND_DIR, "index.html"), "r") as f:
         return f.read()
 
 @app.get("/documentation", response_class=HTMLResponse)
 async def read_docs():
-    with open("frontend/documentation.html", "r") as f:
+    with open(os.path.join(FRONTEND_DIR, "documentation.html"), "r") as f:
         return f.read()
 
 @app.post("/chat")
@@ -56,20 +60,25 @@ async def chat(request: Request):
     try:
         data = await request.json()
         prompt = data.get("message", "")
-        print(f"[CHAT] Received prompt: {prompt[:50]}...")
-        
+        print(f"[CHAT] Received: {prompt[:80]}")
+
         async def event_generator():
             if model:
-                print(f"[CHAT] Generating response for: {prompt[:30]}...")
-                token_count = 0
-                for token in model.generate(prompt, max_tokens=50):
-                    yield f"data: {json.dumps({'token': token})}\n\n"
-                    token_count += 1
-                    await asyncio.sleep(0.05) # Simulate streaming delay
-                print(f"[CHAT] Generation complete. Tokens: {token_count}")
+                try:
+                    print(f"[CHAT] Generating response for: {prompt[:30]}...")
+                    token_count = 0
+                    for token in model.generate_stream(prompt, max_len=50):
+                        yield f"data: {json.dumps({'token': token})}\n\n"
+                        token_count += 1
+                        await asyncio.sleep(0.02) # Snappy streaming 
+                    print(f"[CHAT] Generation complete. Tokens: {token_count}")
+                except Exception as e:
+                    print(f"[ERROR] Generation failed: {e}")
+                    import traceback
+                    traceback.print_exc()
+                    yield f"data: {json.dumps({'token': f'Error: {str(e)}'})}\n\n"
             else:
-                print("[ERROR] Chat requested but model is not initialized.")
-                yield f"data: {json.dumps({'token': 'Error: Model not initialized. Shared library may be missing.'})}\n\n"
+                yield f"data: {json.dumps({'token': 'Error: Model not loaded. Check server logs.'})}\n\n"
             yield "data: [DONE]\n\n"
 
         return StreamingResponse(event_generator(), media_type="text/event-stream")
@@ -79,8 +88,13 @@ async def chat(request: Request):
 
 @app.get("/health")
 async def health():
-    return {"status": "healthy"}
+    return {
+        "status": "healthy",
+        "model_loaded": model is not None,
+        "mode": "pure-python"
+    }
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run(app, host="0.0.0.0", port=port)

@@ -1,69 +1,19 @@
-# Stage 1: Build the C++ library
-FROM ubuntu:24.04 AS builder
+# Pure Python runtime — no C++ build needed
+FROM python:3.11-slim
 
-# Prevent interactive prompts during package installation
-ENV DEBIAN_FRONTEND=noninteractive
-
-# Install build dependencies
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    cmake \
-    libeigen3-dev \
-    git \
-    git-lfs \
-    && rm -rf /var/lib/apt/lists/*
-
-# Set working directory
 WORKDIR /app
-
-# Copy the source code and build script
-COPY . .
-
-# Build the shared library
-# Note: We skip 'git lfs pull' here because Render/CI often don't provide the .git directory in the build context.
-# Render's native Git LFS support should handle the file download before the build starts.
-RUN rm -rf build && \
-    mkdir -p build && \
-    cd build && \
-    cmake .. && \
-    make alien_llm_lib
-
-# Stage 2: Final runtime image
-FROM ubuntu:24.04
-
-# Prevent interactive prompts
-ENV DEBIAN_FRONTEND=noninteractive
-
-# Install Python and runtime dependencies
-RUN apt-get update && apt-get install -y \
-    python3 \
-    python3-pip \
-    python3-venv \
-    libstdc++6 \
-    && rm -rf /var/lib/apt/lists/*
-
-# Set working directory
-WORKDIR /app
-
-# Create a virtual environment for Python
-RUN python3 -m venv /opt/venv
-ENV PATH="/opt/venv/bin:$PATH"
-
-# Copy built library from builder stage
-COPY --from=builder /app/build/libalien_llm_lib.so ./build/libalien_llm_lib.so
 
 # Copy Python application files
 COPY requirements.txt .
 COPY main.py .
-COPY interface.py .
+COPY alien_inference.py .
+COPY vocab.txt .
 COPY model_checkpoint.bin .
 COPY frontend/ ./frontend/
 
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Expose the port the app runs on
 EXPOSE 8000
 
-# Command to run the application
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
