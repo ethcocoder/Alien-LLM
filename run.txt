@@ -13,10 +13,12 @@ pip install -r requirements.txt
 # Download datasets
 python3 download_datasets.py
 
-# Build the project
+# Build the project (Clear existing build to avoid path mismatches)
+rm -rf build
 mkdir -p build && cd build
 cmake .. -DCMAKE_BUILD_TYPE=Release
 make -j$(nproc)
+
 
 # Run the model
 echo "[COLAB] Starting Training..."

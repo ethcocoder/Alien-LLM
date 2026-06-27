@@ -1,0 +1,80 @@
+/content/Alien-LLM# bash run.txt
+[COLAB] Preparing Alien-LLM environment...
+Get:1 https://cli.github.com/packages stable InRelease [3,917 B]
+Get:2 http://security.ubuntu.com/ubuntu jammy-security InRelease [129 kB]                                                 
+Get:3 https://cloud.r-project.org/bin/linux/ubuntu jammy-cran40/ InRelease [3,632 B]                                      
+Hit:4 http://archive.ubuntu.com/ubuntu jammy InRelease                                                                    
+Get:5 http://archive.ubuntu.com/ubuntu jammy-updates InRelease [128 kB]                                                
+Get:6 http://archive.ubuntu.com/ubuntu jammy-backports InRelease [127 kB]                                           
+Get:7 https://cli.github.com/packages stable/main amd64 Packages [354 B]                                            
+Get:8 https://r2u.stat.illinois.edu/ubuntu jammy InRelease [6,555 B]                                        
+Get:9 https://cloud.r-project.org/bin/linux/ubuntu jammy-cran40/ Packages [99.9 kB]
+Get:10 http://security.ubuntu.com/ubuntu jammy-security/restricted amd64 Packages [7,258 kB]
+Get:11 https://ppa.launchpadcontent.net/deadsnakes/ppa/ubuntu jammy InRelease [18.1 kB]
+Get:12 http://security.ubuntu.com/ubuntu jammy-security/main amd64 Packages [4,046 kB]
+Get:13 http://security.ubuntu.com/ubuntu jammy-security/universe amd64 Packages [1,307 kB]     
+Hit:14 https://ppa.launchpadcontent.net/ubuntugis/ppa/ubuntu jammy InRelease  
+Get:15 http://archive.ubuntu.com/ubuntu jammy-updates/restricted amd64 Packages [7,526 kB]
+Get:16 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 Packages [4,379 kB]
+Get:17 http://archive.ubuntu.com/ubuntu jammy-updates/universe amd64 Packages [1,612 kB]
+Get:18 http://archive.ubuntu.com/ubuntu jammy-backports/main amd64 Packages [82.8 kB]
+Get:19 http://archive.ubuntu.com/ubuntu jammy-backports/universe amd64 Packages [35.6 kB]
+Get:20 https://r2u.stat.illinois.edu/ubuntu jammy/main all Packages [10.4 MB]
+Get:21 https://ppa.launchpadcontent.net/deadsnakes/ppa/ubuntu jammy/main amd64 Packages [38.6 kB]
+Get:22 https://r2u.stat.illinois.edu/ubuntu jammy/main amd64 Packages [3,081 kB]               
+Fetched 40.3 MB in 3s (11.8 MB/s)                        
+Reading package lists... Done
+W: Skipping acquire of configured file 'main/source/Sources' as repository 'https://r2u.stat.illinois.edu/ubuntu jammy InRelease' does not seem to provide it (sources.list entry misspelt?)
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+build-essential is already the newest version (12.9ubuntu3).
+cmake is already the newest version (3.22.1-1ubuntu1.22.04.2).
+Suggested packages:
+  libeigen3-doc libmpfrc++-dev
+The following NEW packages will be installed:
+  libeigen3-dev
+0 upgraded, 1 newly installed, 0 to remove and 62 not upgraded.
+Need to get 1,056 kB of archives.
+After this operation, 9,081 kB of additional disk space will be used.
+Get:1 http://archive.ubuntu.com/ubuntu jammy/universe amd64 libeigen3-dev all 3.4.0-2ubuntu2 [1,056 kB]
+Fetched 1,056 kB in 0s (29.6 MB/s)      
+Selecting previously unselected package libeigen3-dev.
+(Reading database ... 118243 files and directories currently installed.)
+Preparing to unpack .../libeigen3-dev_3.4.0-2ubuntu2_all.deb ...
+Unpacking libeigen3-dev (3.4.0-2ubuntu2) ...
+Setting up libeigen3-dev (3.4.0-2ubuntu2) ...
+Requirement already satisfied: fastapi in /usr/local/lib/python3.12/dist-packages (from -r requirements.txt (line 1)) (0.136.3)
+Requirement already satisfied: uvicorn in /usr/local/lib/python3.12/dist-packages (from -r requirements.txt (line 2)) (0.49.0)
+Requirement already satisfied: pydantic in /usr/local/lib/python3.12/dist-packages (from -r requirements.txt (line 3)) (2.12.3)
+Requirement already satisfied: python-multipart in /usr/local/lib/python3.12/dist-packages (from -r requirements.txt (line 4)) (0.0.32)
+Requirement already satisfied: requests in /usr/local/lib/python3.12/dist-packages (from -r requirements.txt (line 5)) (2.32.4)
+Requirement already satisfied: numpy in /usr/local/lib/python3.12/dist-packages (from -r requirements.txt (line 6)) (2.0.2)
+Collecting gunicorn (from -r requirements.txt (line 7))
+  Downloading gunicorn-26.0.0-py3-none-any.whl.metadata (5.4 kB)
+Requirement already satisfied: starlette>=0.46.0 in /usr/local/lib/python3.12/dist-packages (from fastapi->-r requirements.txt (line 1)) (0.52.1)
+Requirement already satisfied: typing-extensions>=4.8.0 in /usr/local/lib/python3.12/dist-packages (from fastapi->-r requirements.txt (line 1)) (4.15.0)
+Requirement already satisfied: typing-inspection>=0.4.2 in /usr/local/lib/python3.12/dist-packages (from fastapi->-r requirements.txt (line 1)) (0.4.2)
+Requirement already satisfied: annotated-doc>=0.0.2 in /usr/local/lib/python3.12/dist-packages (from fastapi->-r requirements.txt (line 1)) (0.0.4)
+Requirement already satisfied: click>=7.0 in /usr/local/lib/python3.12/dist-packages (from uvicorn->-r requirements.txt (line 2)) (8.4.1)
+Requirement already satisfied: h11>=0.8 in /usr/local/lib/python3.12/dist-packages (from uvicorn->-r requirements.txt (line 2)) (0.16.0)
+Requirement already satisfied: annotated-types>=0.6.0 in /usr/local/lib/python3.12/dist-packages (from pydantic->-r requirements.txt (line 3)) (0.7.0)
+Requirement already satisfied: pydantic-core==2.41.4 in /usr/local/lib/python3.12/dist-packages (from pydantic->-r requirements.txt (line 3)) (2.41.4)
+Requirement already satisfied: charset_normalizer<4,>=2 in /usr/local/lib/python3.12/dist-packages (from requests->-r requirements.txt (line 5)) (3.4.7)
+Requirement already satisfied: idna<4,>=2.5 in /usr/local/lib/python3.12/dist-packages (from requests->-r requirements.txt (line 5)) (3.18)
+Requirement already satisfied: urllib3<3,>=1.21.1 in /usr/local/lib/python3.12/dist-packages (from requests->-r requirements.txt (line 5)) (2.5.0)
+Requirement already satisfied: certifi>=2017.4.17 in /usr/local/lib/python3.12/dist-packages (from requests->-r requirements.txt (line 5)) (2026.5.20)
+Requirement already satisfied: packaging in /usr/local/lib/python3.12/dist-packages (from gunicorn->-r requirements.txt (line 7)) (26.2)
+Requirement already satisfied: anyio<5,>=3.6.2 in /usr/local/lib/python3.12/dist-packages (from starlette>=0.46.0->fastapi->-r requirements.txt (line 1)) (4.13.0)
+Downloading gunicorn-26.0.0-py3-none-any.whl (212 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 212.0/212.0 kB 12.3 MB/s eta 0:00:00
+Installing collected packages: gunicorn
+Successfully installed gunicorn-26.0.0
+TinyStories-valid.txt already exists.
+alpaca_train.parquet already exists.
+Converting Parquet to JSONL...
+Conversion complete: alpaca_data.jsonl
+CMake Error: The current CMakeCache.txt directory /content/Alien-LLM/build/CMakeCache.txt is different than the directory c:/Users/Latera/Documents/alien/Alien-LLM/build where CMakeCache.txt was created. This may result in binaries being created in the wrong place. If you are not sure, reedit the CMakeCache.txt
+CMake Error: The source "/content/Alien-LLM/CMakeLists.txt" does not match the source "C:/Users/Latera/Documents/alien/Alien-LLM/CMakeLists.txt" used to generate cache.  Re-run cmake with a different source directory.
+/content/Alien-LLM# 
+[0] 0:bash*                                                                                  "d4b0dd7e6c99" 08:21 27-Jun-26
