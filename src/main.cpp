@@ -44,7 +44,8 @@ int main(int argc, char** argv) {
         model.load_checkpoint(checkpoint_path);
     }
 
-    AI2Trainer trainer(model);
+    AI2Trainer trainer(model, 0.002f);
+
     Eigen::VectorXf task_emb = Eigen::VectorXf::Random(16);
 
     // 4. Training (Simulated Loop)
