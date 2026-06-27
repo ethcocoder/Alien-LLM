@@ -27,6 +27,8 @@ public:
         
         // Output Layer (The "Brain")
         W_out = Eigen::MatrixXf::Random(vocab_size, d_model) * 0.01f;
+        W_out_acc = Eigen::MatrixXf::Zero(vocab_size, d_model);
+
         
         // Normalization params
         gamma = Eigen::VectorXf::Ones(d_model);
@@ -76,26 +78,40 @@ public:
         history.clear();
     }
 
-    void update(int token_id, const Eigen::VectorXf& task_emb, const Eigen::VectorXf& grad_logits, float lr) {
+    void accumulate_gradients(int token_id, const Eigen::VectorXf& task_emb, const Eigen::VectorXf& grad_logits) {
+        // Accumulate W_out
+        W_out_acc += grad_logits * last_h_reason.transpose();
 
-        // 1. Gradient of W_out
-        // dL/dW_out = grad_logits * h_reason^T
-        W_out -= lr * grad_logits * last_h_reason.transpose();
-
-        // 2. Propagate to layers
+        // Propagate to layers
         Eigen::VectorXf grad_h = W_out.transpose() * grad_logits;
         
-        // Update STRE
-        // (Simplified: we use the same grad for recently used layers)
-        
-        // Update Core Layers
         Eigen::VectorXf x = embedding.get_embedding(token_id);
-        ssm.update(x, 0.5f * grad_h, lr);
-        rfa.update(x, 0.5f * grad_h, lr);
-        
-        // Update Embedding
-        embedding.update(token_id, grad_h, lr);
+        ssm.accumulate_gradients(x, 0.5f * grad_h);
+        rfa.accumulate_gradients(x, 0.5f * grad_h);
     }
+
+    void apply_gradients(float lr) {
+        // Update W_out with Adam logic
+        static Eigen::MatrixXf m_W = Eigen::MatrixXf::Zero(vocab_size, d_model);
+        static Eigen::MatrixXf v_W = Eigen::MatrixXf::Zero(vocab_size, d_model);
+        static int t = 0;
+        t++;
+        
+        float b1 = 0.9f, b2 = 0.999f, eps = 1e-8f;
+        m_W = b1 * m_W + (1.0f - b1) * W_out_acc;
+        v_W = b2 * v_W + (1.0f - b2) * W_out_acc.array().square().matrix();
+        
+        float m_corr = 1.0f - std::pow(b1, t);
+        float v_corr = 1.0f - std::pow(b2, t);
+        W_out.array() -= lr * (m_W.array() / m_corr) / ((v_W.array() / v_corr).sqrt() + eps);
+        
+        W_out_acc.setZero();
+        
+        // Apply to sub-layers
+        ssm.apply_gradients(lr);
+        rfa.apply_gradients(lr);
+    }
+
 
 
     int get_d_model() const { return d_model; }
@@ -157,12 +173,13 @@ private:
     SparseSynthesizer ssog;
     
     // Brain (Output)
-    Eigen::MatrixXf W_out;
+    Eigen::MatrixXf W_out, W_out_acc;
     Eigen::VectorXf gamma, beta;
     Eigen::VectorXf last_h_reason;
     
     std::vector<Eigen::VectorXf> history;
 };
+
 
 
 

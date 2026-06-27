@@ -13,6 +13,7 @@ public:
         // Adam parameters
         m_W = Eigen::MatrixXf::Zero(r_features, d_model);
         v_W = Eigen::MatrixXf::Zero(r_features, d_model);
+        grad_W_acc = Eigen::MatrixXf::Zero(r_features, d_model);
         t = 0;
         
         // Initialize state for prefix sums (causal attention)
@@ -49,34 +50,41 @@ public:
         is.read((char*)W_random.data(), W_random.size() * sizeof(float));
     }
 
-    void update(const Eigen::VectorXf& q, const Eigen::VectorXf& grad_out, float lr = 0.001f) {
-        t++;
+    void accumulate_gradients(const Eigen::VectorXf& q, const Eigen::VectorXf& grad_out) {
         Eigen::VectorXf phi_q = feature_map(q);
-        // Map d_model grad to r_features grad (approximate)
         Eigen::VectorXf grad_phi = (W_random * grad_out).cwiseProduct(phi_q);
-        Eigen::MatrixXf grad = grad_phi * q.transpose();
-        
+        grad_W_acc += grad_phi * q.transpose();
+    }
+
+    void apply_gradients(float lr) {
+        t++;
         // Adam Update
         float b1 = 0.9f, b2 = 0.999f, eps = 1e-8f;
-        m_W = b1 * m_W + (1.0f - b1) * grad;
-        v_W = b2 * v_W + (1.0f - b2) * grad.array().square().matrix();
+        m_W = b1 * m_W + (1.0f - b1) * grad_W_acc;
+        v_W = b2 * v_W + (1.0f - b2) * grad_W_acc.array().square().matrix();
         
         float m_corr = 1.0f - std::pow(b1, t);
         float v_corr = 1.0f - std::pow(b2, t);
         
         W_random.array() -= lr * (m_W.array() / m_corr) / ((v_W.array() / v_corr).sqrt() + eps);
+        
+        // Reset
+        grad_W_acc.setZero();
     }
 
 
 private:
 
+
     int d_model;
     int r_features;
     Eigen::MatrixXf W_random;
     Eigen::MatrixXf m_W, v_W;
+    Eigen::MatrixXf grad_W_acc;
     int t;
     
     Eigen::MatrixXf numerator_state;
+
 
     Eigen::VectorXf denominator_state;
 

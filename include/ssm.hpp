@@ -25,8 +25,10 @@ public:
         // Adam parameters
         m_C = Eigen::MatrixXcf::Zero(d_model, d_state);
         v_C = Eigen::MatrixXf::Zero(d_model, d_state);
+        grad_C_acc = Eigen::MatrixXcf::Zero(d_model, d_state);
         t = 0;
     }
+
 
 
     Eigen::VectorXf forward(const Eigen::VectorXf& u) {
@@ -78,26 +80,26 @@ public:
         is.read((char*)D.data(), D.size() * sizeof(float));
     }
 
-    void update(const Eigen::VectorXf& u, const Eigen::VectorXf& grad_out, float lr = 0.001f) {
+    void accumulate_gradients(const Eigen::VectorXf& u, const Eigen::VectorXf& grad_out) {
+        grad_C_acc += grad_out.cast<std::complex<float>>() * state.adjoint();
+    }
+
+    void apply_gradients(float lr) {
         t++;
-        Eigen::MatrixXcf grad_C = grad_out.cast<std::complex<float>>() * state.adjoint();
-        
         // Adam Update for C (Vectorized)
         float b1 = 0.9f, b2 = 0.999f, eps = 1e-8f;
-        m_C = b1 * m_C + (1.0f - b1) * grad_C;
-        v_C = b2 * v_C + (1.0f - b2) * grad_C.array().abs2().matrix();
+        m_C = b1 * m_C + (1.0f - b1) * grad_C_acc;
+        v_C = b2 * v_C + (1.0f - b2) * grad_C_acc.array().abs2().matrix();
         
         float m_corr = 1.0f - std::pow(b1, t);
         float v_corr = 1.0f - std::pow(b2, t);
         
-        // Correct vectorized Adam update for complex matrices
         C.array() -= lr * (m_C.array() / m_corr) / ((v_C.array() / v_corr).sqrt() + eps);
-
-        // Simpler update for others
-
-        B -= lr * (state * u.cast<std::complex<float>>().transpose().conjugate()).topRows(d_state);
-        D -= lr * grad_out.cwiseProduct(u);
+        
+        // Reset accumulator
+        grad_C_acc.setZero();
     }
+
 
 
 private:
@@ -113,8 +115,10 @@ private:
     // Adam State
     Eigen::MatrixXcf m_C;
     Eigen::MatrixXf v_C;
+    Eigen::MatrixXcf grad_C_acc;
     int t;
 };
+
 
 
 #endif // SSM_HPP

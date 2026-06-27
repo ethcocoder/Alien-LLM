@@ -1,13 +1,13 @@
 User: Once upon a time, there was a little bird who
-AI2: bag.  agreed.  name.  up."  body."  talk.  today."  Sue  tail,  mouth.  up.  Finny.  my  Suddenly,  it?"  lonely.  how  hungry  saved!  thing  
+AI2: was  was  was  was  was  was  was  was  was  was  was  was  was  was  was  was  was  was  was  was  
 
 User: Instruction: Explain the concept of gravity.
 Input: 
 Response: 
-AI2: lyrics  around  chick  clumsy  sunshine  dog.  friend."  drinks.  boat.  Mittens,  creative.  convenient  smartphone,  Ocean.  today!"  blue,  tricks.  diet  nightmare  Jake  
+AI2: was  was  was  was  was  was  was  was  was  was  was  was  was  was  was  was  was  was  was  was  
 
 User: Instruction: Write a short poem about the moon.
 Input: 
 Response: 
-AI2: tap  with.  felt  pieces.  the  cold  ride  opinions  many.  work!  stealing  fruit  today's  fence.  Tim  Given  sharks  time,  celebrate  body.  
+AI2: was  was  was  was  was  was  was  was  was  was  was  was  was  was  was  was  was  was  was  was  
 

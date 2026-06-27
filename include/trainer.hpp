@@ -14,7 +14,7 @@ public:
     void train_step(const std::vector<int>& tokens, const Eigen::VectorXf& task_emb) {
         model.reset();
         int batch_size = 32;
-        Eigen::VectorXf grad_acc = Eigen::VectorXf::Zero(model.get_vocab_size());
+        float accumulation_count = 0;
         
         ProgressBar pb(tokens.size() - 1, 50, "Training");
         for (size_t i = 0; i < tokens.size() - 1; ++i) {
@@ -27,17 +27,23 @@ public:
             Eigen::VectorXf grad_logits = probs;
             grad_logits(target) -= 1.0f;
             
-            // Fast Update: Every N steps
-            if (i % batch_size == 0 && i > 0) {
-                model.update(tokens[i], task_emb, grad_logits, lr);
+            // 1. Accumulate Knowledge
+            model.accumulate_gradients(tokens[i], task_emb, grad_logits);
+            accumulation_count++;
+
+            // 2. Optimized Step (PyTorch Style)
+            if (accumulation_count >= batch_size) {
+                model.apply_gradients(lr);
+                accumulation_count = 0;
             }
-            // (Note: in a real big model we'd sum the gradients, but for this 
-            // hybrid RNN, updating on sparse steps is a valid speed trick)
             
             if (i % 200 == 0) pb.update(i);
         }
+        model.apply_gradients(lr); // Final update
         pb.update(tokens.size() - 1);
+
     }
+
 
 
 
