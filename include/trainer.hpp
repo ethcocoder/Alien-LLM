@@ -66,9 +66,9 @@ public:
                 Eigen::VectorXf grad_logits = probs;
                 grad_logits(target) -= 1.0f;
                 
-                model.update(input_token, task_emb, grad_logits, lr);
+                model.accumulate_gradients(input_token, task_emb, grad_logits);
             }
-
+            model.apply_gradients(lr);
         }
         std::cout << "Fine-tuning complete." << std::endl;
     }
