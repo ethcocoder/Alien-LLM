@@ -31,6 +31,7 @@ public:
         // Normalization params
         gamma = Eigen::VectorXf::Ones(d_model);
         beta = Eigen::VectorXf::Zero(d_model);
+        last_h_reason = Eigen::VectorXf::Zero(d_model);
     }
 
     Eigen::VectorXf process_token(int token_id, const Eigen::VectorXf& task_emb) {
@@ -54,12 +55,12 @@ public:
         Eigen::VectorXf h_reason = stre.forward(history);
 
         // Synthesis to logits
-        static Eigen::VectorXf last_h_reason;
-        last_h_reason = h_reason;
+        this->last_h_reason = h_reason;
         
         Eigen::VectorXf logits = W_out * h_reason;
         return logits;
     }
+
 
     Eigen::VectorXf layer_norm(const Eigen::VectorXf& x) {
         float mean = x.mean();
