@@ -35,6 +35,14 @@ public:
         denominator_state.setZero();
     }
 
+    void save(std::ostream& os) const {
+        os.write((char*)W_random.data(), W_random.size() * sizeof(double));
+    }
+
+    void load(std::istream& is) {
+        is.read((char*)W_random.data(), W_random.size() * sizeof(double));
+    }
+
 private:
     int d_model;
     int r_features;

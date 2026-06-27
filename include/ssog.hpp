@@ -32,6 +32,20 @@ public:
         return output;
     }
 
+    void save(std::ostream& os) const {
+        for (const auto& expert : experts) {
+            os.write((char*)expert.data(), expert.size() * sizeof(double));
+        }
+        os.write((char*)W_gate.data(), W_gate.size() * sizeof(double));
+    }
+
+    void load(std::istream& is) {
+        for (auto& expert : experts) {
+            is.read((char*)expert.data(), expert.size() * sizeof(double));
+        }
+        is.read((char*)W_gate.data(), W_gate.size() * sizeof(double));
+    }
+
 private:
     int d_in;
     int d_out;

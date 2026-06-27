@@ -56,9 +56,17 @@ public:
 
     void save_checkpoint(const std::string& path) const {
         std::ofstream os(path, std::ios::binary);
+        if (!os.is_open()) {
+            std::cerr << "[ERROR] Could not open " << path << " for writing." << std::endl;
+            return;
+        }
         embedding.save(os);
         ssm.save(os);
-        // Add other components if needed
+        rfa.save(os);
+        stre.save(os);
+        ata.save(os);
+        ssog.save(os);
+        uq.save(os);
         os.close();
     }
 
@@ -67,7 +75,14 @@ public:
         if (is.is_open()) {
             embedding = CHEEmbedding::load(is);
             ssm.load(is);
+            rfa.load(is);
+            stre.load(is);
+            ata.load(is);
+            ssog.load(is);
+            uq.load(is);
             is.close();
+        } else {
+            std::cerr << "[ERROR] Could not open " << path << " for reading." << std::endl;
         }
     }
 

@@ -40,6 +40,23 @@ public:
         return variance / ensemble_outputs.size();
     }
 
+    void save(std::ostream& os) const {
+        size_t size = scores.size();
+        os.write((char*)&size, sizeof(size));
+        if (size > 0) {
+            os.write((char*)scores.data(), size * sizeof(double));
+        }
+    }
+
+    void load(std::istream& is) {
+        size_t size;
+        is.read((char*)&size, sizeof(size));
+        scores.resize(size);
+        if (size > 0) {
+            is.read((char*)scores.data(), size * sizeof(double));
+        }
+    }
+
 private:
     int reservoir_size;
     std::vector<double> scores;

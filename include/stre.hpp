@@ -34,6 +34,16 @@ public:
         return next_x.back();
     }
 
+    void save(std::ostream& os) const {
+        os.write((char*)W_restriction.data(), W_restriction.size() * sizeof(double));
+        os.write((char*)W_node.data(), W_node.size() * sizeof(double));
+    }
+
+    void load(std::istream& is) {
+        is.read((char*)W_restriction.data(), W_restriction.size() * sizeof(double));
+        is.read((char*)W_node.data(), W_node.size() * sizeof(double));
+    }
+
 private:
     int d_model;
     int d_reasoning;

@@ -41,7 +41,9 @@ public:
         is.read((char*)&k_shards, sizeof(k_shards));
         is.read((char*)&m_hash, sizeof(m_hash));
         is.read((char*)&shard_dim, sizeof(shard_dim));
-        CHEEmbedding emb(d_model, d_model, k_shards, m_hash);
+        
+        // Use a dummy vocab_size (0) as it's not used in internal storage
+        CHEEmbedding emb(0, d_model, k_shards, m_hash);
         for (auto& shard : emb.shards) {
             is.read((char*)shard.data(), shard.size() * sizeof(double));
         }

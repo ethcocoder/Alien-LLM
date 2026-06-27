@@ -15,6 +15,14 @@ public:
         return adapter;
     }
 
+    void save(std::ostream& os) const {
+        os.write((char*)W_hyper.data(), W_hyper.size() * sizeof(double));
+    }
+
+    void load(std::istream& is) {
+        is.read((char*)W_hyper.data(), W_hyper.size() * sizeof(double));
+    }
+
 private:
     int d_task;
     int d_model;

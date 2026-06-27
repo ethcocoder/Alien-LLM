@@ -24,3 +24,7 @@ target_link_libraries(alien_llm_lib PUBLIC Eigen3::Eigen)
 # Executable for testing
 add_executable(alien_llm src/main.cpp)
 target_link_libraries(alien_llm PRIVATE Eigen3::Eigen)
+
+# Checkpoint verification test
+add_executable(test_checkpoint scratch/test_checkpoint.cpp)
+target_link_libraries(test_checkpoint PRIVATE Eigen3::Eigen)
