@@ -21,13 +21,8 @@ make -j$(nproc)
 
 
 # Run the model
-echo "[COLAB] Starting Full Training (Standard)..."
+echo "[COLAB] Starting Training (BLITZ MODE)..."
 cd ..
-
-# RUN OPTIONS:
-# For full training: ./build/alien_llm
-# For resume: ./build/alien_llm --resume
-# For quick test: ./build/alien_llm --quick
 
 ./build/alien_llm
 
