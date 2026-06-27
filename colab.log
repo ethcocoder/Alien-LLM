@@ -1,12 +1,12 @@
-/content/Alien-LLM# bash run.txt
+content/Alien-LLM# bash run.txt
 [COLAB] Preparing Alien-LLM environment...
-Hit:1 http://archive.ubuntu.com/ubuntu jammy InRelease
-Hit:2 http://security.ubuntu.com/ubuntu jammy-security InRelease                                                          
-Hit:3 https://cli.github.com/packages stable InRelease                                                                    
-Hit:4 http://archive.ubuntu.com/ubuntu jammy-updates InRelease                                                            
-Hit:5 http://archive.ubuntu.com/ubuntu jammy-backports InRelease                                                          
-Hit:6 https://cloud.r-project.org/bin/linux/ubuntu jammy-cran40/ InRelease                                                
-Hit:7 https://r2u.stat.illinois.edu/ubuntu jammy InRelease                                                             
+Hit:1 http://security.ubuntu.com/ubuntu jammy-security InRelease
+Hit:2 http://archive.ubuntu.com/ubuntu jammy InRelease                                                                     
+Hit:3 https://cli.github.com/packages stable InRelease                                                                     
+Hit:4 http://archive.ubuntu.com/ubuntu jammy-updates InRelease                                                             
+Hit:5 https://cloud.r-project.org/bin/linux/ubuntu jammy-cran40/ InRelease                                                 
+Hit:6 http://archive.ubuntu.com/ubuntu jammy-backports InRelease                                                           
+Hit:7 https://r2u.stat.illinois.edu/ubuntu jammy InRelease                                                              
 Hit:8 https://ppa.launchpadcontent.net/deadsnakes/ppa/ubuntu jammy InRelease       
 Hit:9 https://ppa.launchpadcontent.net/ubuntugis/ppa/ubuntu jammy InRelease
 Reading package lists... Done
@@ -55,11 +55,11 @@ Conversion complete: alpaca_data.jsonl
 -- Check for working CXX compiler: /usr/bin/c++ - skipped
 -- Detecting CXX compile features
 -- Detecting CXX compile features - done
--- Configuring done (0.4s)
+-- Configuring done (0.6s)
 -- Generating done (0.0s)
 -- Build files have been written to: /content/Alien-LLM/build
-[ 16%] Building CXX object CMakeFiles/alien_llm_lib.dir/src/bridge.cpp.o
-[ 33%] Building CXX object CMakeFiles/alien_llm.dir/src/main.cpp.o
+[ 16%] Building CXX object CMakeFiles/alien_llm.dir/src/main.cpp.o
+[ 33%] Building CXX object CMakeFiles/alien_llm_lib.dir/src/bridge.cpp.o
 [ 50%] Linking CXX shared library libalien_llm_lib.so
 [ 50%] Built target alien_llm_lib
 [ 66%] Building CXX object CMakeFiles/test_checkpoint.dir/scratch/test_checkpoint.cpp.o
@@ -72,26 +72,6 @@ Conversion complete: alpaca_data.jsonl
 Resuming from checkpoint: model_checkpoint.bin
 [ERROR] Could not open model_checkpoint.bin for reading.
 Training...
-Training [==================================================] 100% (97722/97722)
-Checkpoint saved to model_checkpoint.bin
-
---- Communication Validation ---
-User: Once upon a time, there was a little bird who
-Generating [==============================] 100% (20/20)
-
-
-User: Instruction: Explain the concept of gravity.
-Input: 
-Response: 
-Generating [==============================] 100% (20/20)
-
-
-User: Instruction: Write a short poem about the moon.
-Input: 
-Response: 
-Generating [==============================] 100% (20/20)
-
-
-Pipeline complete. Logs saved to communication_log.txt
+run.txt: line 26: 13391 Segmentation fault      (core dumped) ./build/alien_llm --resume
 /content/Alien-LLM# 
-[0] 0:bash*                                                                                  "d4b0dd7e6c99" 08:30 27-Jun-26
+[0] 0:bash*                                                                                   "d4b0dd7e6c99" 08:42 27-Jun-26
