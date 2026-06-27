@@ -66,15 +66,15 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    for (int epoch = 1; epoch <= epochs; ++epoch) {
-        std::cout << "\n--- Epoch " << epoch << "/" << epochs << " ---" << std::endl;
-        trainer.train_step(train_tokens, task_emb);
-        
-        // Save checkpoint after every epoch
-        model.save_checkpoint(checkpoint_path);
-        tokenizer.save_vocab("vocab.txt");
-        std::cout << "Epoch " << epoch << " complete. Checkpoint saved." << std::endl;
-    }
+    // 4. Training (Single Nitro Pass)
+    std::cout << "\nStarting training (Nitro Pass)..." << std::endl;
+    trainer.train_step(train_tokens, task_emb);
+    
+    // Save checkpoint
+    model.save_checkpoint(checkpoint_path);
+    tokenizer.save_vocab("vocab.txt");
+    std::cout << "Training complete. Checkpoint saved." << std::endl;
+
 
 
 
