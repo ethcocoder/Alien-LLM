@@ -12,12 +12,12 @@ public:
         
         shard_dim = d_model / k_shards;
         for (int i = 0; i < k_shards; ++i) {
-            shards.push_back(Eigen::MatrixXd::Random(m_hash, shard_dim));
+            shards.push_back(Eigen::MatrixXf::Random(m_hash, shard_dim));
         }
     }
 
-    Eigen::VectorXd get_embedding(int token_id) {
-        Eigen::VectorXd result(d_model);
+    Eigen::VectorXf get_embedding(int token_id) {
+        Eigen::VectorXf result(d_model);
         for (int j = 0; j < k_shards; ++j) {
             int hash_val = hash_func(token_id, j) % m_hash;
             result.segment(j * shard_dim, shard_dim) = shards[j].row(hash_val);
@@ -31,7 +31,7 @@ public:
         os.write((char*)&m_hash, sizeof(m_hash));
         os.write((char*)&shard_dim, sizeof(shard_dim));
         for (const auto& shard : shards) {
-            os.write((char*)shard.data(), shard.size() * sizeof(double));
+            os.write((char*)shard.data(), shard.size() * sizeof(float));
         }
     }
 
@@ -45,7 +45,7 @@ public:
         // Use a dummy vocab_size (0) as it's not used in internal storage
         CHEEmbedding emb(0, d_model, k_shards, m_hash);
         for (auto& shard : emb.shards) {
-            is.read((char*)shard.data(), shard.size() * sizeof(double));
+            is.read((char*)shard.data(), shard.size() * sizeof(float));
         }
         return emb;
     }
@@ -55,7 +55,7 @@ private:
     int k_shards;
     int m_hash;
     int shard_dim;
-    std::vector<Eigen::MatrixXd> shards;
+    std::vector<Eigen::MatrixXf> shards;
 
     size_t hash_func(int token_id, int shard_idx) {
         // Simple universal hash function variant
@@ -66,3 +66,4 @@ private:
 };
 
 #endif // EMBEDDINGS_HPP
+

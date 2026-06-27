@@ -4,6 +4,13 @@ project(AlienLLM VERSION 1.0)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# Optimization Flags
+if(MSVC)
+    add_compile_options(/O2 /arch:AVX2 /fp:fast)
+else()
+    add_compile_options(-O3 -mavx2 -mfma -ffast-math)
+endif()
+
 # Add include directory
 include_directories(include)
 
@@ -28,3 +35,4 @@ target_link_libraries(alien_llm PRIVATE Eigen3::Eigen)
 # Checkpoint verification test
 add_executable(test_checkpoint scratch/test_checkpoint.cpp)
 target_link_libraries(test_checkpoint PRIVATE Eigen3::Eigen)
+

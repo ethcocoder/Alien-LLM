@@ -6,12 +6,13 @@
 #include "tokenizer.hpp"
 #include "orchestrator.hpp"
 #include "dataloader.hpp"
+#include "utils.hpp"
 
 extern "C" {
     typedef struct {
         Tokenizer* tokenizer;
         AI2Orchestrator* model;
-        Eigen::VectorXd* task_emb;
+        Eigen::VectorXf* task_emb;
     } ModelInstance;
 
     ModelInstance* create_model(const char* checkpoint_path, int d_model_ignored) {
@@ -49,8 +50,8 @@ extern "C" {
             std::cerr << "[WARNING] Checkpoint not found at " << checkpoint_path << ". Starting with random weights." << std::endl;
         }
         
-        instance->task_emb = new Eigen::VectorXd(16);
-        *instance->task_emb = Eigen::VectorXd::Random(16);
+        instance->task_emb = new Eigen::VectorXf(16);
+        *instance->task_emb = Eigen::VectorXf::Random(16);
         
         std::cout << "[BACKEND] Model initialization complete." << std::endl;
         return instance;
@@ -68,7 +69,7 @@ extern "C" {
     }
 
     const char* generate_token(ModelInstance* instance, int last_token_id) {
-        Eigen::VectorXd out = instance->model->process_token(last_token_id, *instance->task_emb);
+        Eigen::VectorXf out = instance->model->process_token(last_token_id, *instance->task_emb);
         
         // Simplified next token selection logic from main.cpp
         int next_id = (int)(std::abs(out.sum())) % instance->tokenizer->vocab_size();
@@ -77,9 +78,6 @@ extern "C" {
         static std::string last_decoded_token;
         last_decoded_token = instance->tokenizer->decode({next_id});
         
-        // Store the next_id back to last_token_id for the next call if needed, 
-        // but here we just return the string.
-        // We'll handle the loop in Python.
         return last_decoded_token.c_str();
     }
 
@@ -92,9 +90,12 @@ extern "C" {
     }
 
     void process_tokens(ModelInstance* instance, int* tokens, int count) {
+        ProgressBar pb(count, 30, "Pre-processing");
         for (int i = 0; i < count; ++i) {
             instance->model->process_token(tokens[i], *instance->task_emb);
+            if (i % 10 == 0) pb.update(i);
         }
+        pb.update(count);
     }
 
     int get_last_token_id(ModelInstance* instance, const char* text) {
@@ -103,3 +104,5 @@ extern "C" {
         return encoded.back();
     }
 }
+
+

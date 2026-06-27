@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <fstream>
+#include <iostream>
 #include "tokenizer.hpp"
 #include "embeddings.hpp"
 #include "ssm.hpp"
@@ -24,27 +25,27 @@ public:
         this->d_model = d_model;
     }
 
-    Eigen::VectorXd process_token(int token_id, const Eigen::VectorXd& task_emb) {
-        Eigen::VectorXd x = embedding.get_embedding(token_id);
+    Eigen::VectorXf process_token(int token_id, const Eigen::VectorXf& task_emb) {
+        Eigen::VectorXf x = embedding.get_embedding(token_id);
         
         // ATA Adaptation
-        Eigen::MatrixXd adapter = ata.generate_adapter(task_emb);
+        Eigen::MatrixXf adapter = ata.generate_adapter(task_emb);
         x = x + adapter * x;
 
         // Core processing
-        Eigen::VectorXd h_ssm = ssm.forward(x);
-        Eigen::VectorXd h_rfa = rfa.forward(x, x, x);
+        Eigen::VectorXf h_ssm = ssm.forward(x);
+        Eigen::VectorXf h_rfa = rfa.forward(x, x, x);
         
         // Gating (simplified)
-        Eigen::VectorXd h = 0.5 * h_ssm + 0.5 * h_rfa;
+        Eigen::VectorXf h = 0.5f * h_ssm + 0.5f * h_rfa;
 
         // Reasoning (using a small window of history for demonstration)
         history.push_back(h);
         if (history.size() > 5) history.erase(history.begin());
-        Eigen::VectorXd h_reason = stre.forward(history);
+        Eigen::VectorXf h_reason = stre.forward(history);
 
         // Synthesis
-        Eigen::VectorXd out = ssog.forward(h_reason);
+        Eigen::VectorXf out = ssog.forward(h_reason);
         return out;
     }
 
@@ -54,7 +55,10 @@ public:
         history.clear();
     }
 
+    int get_d_model() const { return d_model; }
+
     void save_checkpoint(const std::string& path) const {
+
         std::ofstream os(path, std::ios::binary);
         if (!os.is_open()) {
             std::cerr << "[ERROR] Could not open " << path << " for writing." << std::endl;
@@ -96,7 +100,8 @@ private:
     AgilityMetaController ata;
     SparseSynthesizer ssog;
     
-    std::vector<Eigen::VectorXd> history;
+    std::vector<Eigen::VectorXf> history;
 };
 
 #endif // ORCHESTRATOR_HPP
+

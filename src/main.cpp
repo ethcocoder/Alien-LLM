@@ -5,8 +5,10 @@
 #include "orchestrator.hpp"
 #include "trainer.hpp"
 #include "dataloader.hpp"
+#include "utils.hpp"
 
 int main(int argc, char** argv) {
+
     std::cout << "--- Alien Intelligence (AI2) Training Pipeline ---" << std::endl;
 
     bool resume = (argc > 1 && std::string(argv[1]) == "--resume");
@@ -33,7 +35,7 @@ int main(int argc, char** argv) {
     }
 
     AI2Trainer trainer(model);
-    Eigen::VectorXd task_emb = Eigen::VectorXd::Random(16);
+    Eigen::VectorXf task_emb = Eigen::VectorXf::Random(16);
 
     // 4. Training (Simulated Loop)
     std::cout << "Training..." << std::endl;
@@ -64,17 +66,21 @@ int main(int argc, char** argv) {
         std::cout << "AI2: ";
         log_file << "AI2: ";
         int current_id = prompt_tokens.back();
+        ProgressBar pg(20, 30, "Generating");
         for (int i = 0; i < 20; ++i) {
-            Eigen::VectorXd out = model.process_token(current_id, task_emb);
+            Eigen::VectorXf out = model.process_token(current_id, task_emb);
             int next_id = (int)(std::abs(out.sum())) % tokenizer.vocab_size();
             if (next_id < 4) next_id = 4 + (rand() % (tokenizer.vocab_size() - 4));
             
             std::string word = tokenizer.decode({next_id});
-            std::cout << word << " ";
+            // We'll print the word after the progress bar finishes or use a different style
+            // For now, let's just update the bar and log the word
             log_file << word << " ";
             current_id = next_id;
+            pg.update(i + 1);
         }
         std::cout << "\n" << std::endl;
+
         log_file << "\n\n";
     }
     log_file.close();
@@ -82,3 +88,4 @@ int main(int argc, char** argv) {
     std::cout << "Pipeline complete. Logs saved to communication_log.txt" << std::endl;
     return 0;
 }
+

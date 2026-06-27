@@ -8,19 +8,18 @@ class SheafLayer {
 public:
     SheafLayer(int d_model, int d_reasoning) : d_model(d_model), d_reasoning(d_reasoning) {
         // Restriction maps for a simple graph (e.g., a cycle or path)
-        // In a real scenario, this would be based on the reasoning graph structure
-        W_restriction = Eigen::MatrixXd::Random(d_reasoning, d_reasoning);
-        W_node = Eigen::MatrixXd::Random(d_reasoning, d_model);
+        W_restriction = Eigen::MatrixXf::Random(d_reasoning, d_reasoning);
+        W_node = Eigen::MatrixXf::Random(d_reasoning, d_model);
     }
 
-    Eigen::VectorXd forward(const std::vector<Eigen::VectorXd>& node_features) {
+    Eigen::VectorXf forward(const std::vector<Eigen::VectorXf>& node_features) {
         int n = node_features.size();
-        std::vector<Eigen::VectorXd> x(n);
+        std::vector<Eigen::VectorXf> x(n);
         for(int i=0; i<n; ++i) {
             x[i] = W_node * node_features[i];
         }
 
-        std::vector<Eigen::VectorXd> next_x(n, Eigen::VectorXd::Zero(d_reasoning));
+        std::vector<Eigen::VectorXf> next_x(n, Eigen::VectorXf::Zero(d_reasoning));
         for(int i=0; i<n; ++i) {
             // Simple propagation to neighbors (i-1, i+1)
             int prev = (i - 1 + n) % n;
@@ -35,20 +34,21 @@ public:
     }
 
     void save(std::ostream& os) const {
-        os.write((char*)W_restriction.data(), W_restriction.size() * sizeof(double));
-        os.write((char*)W_node.data(), W_node.size() * sizeof(double));
+        os.write((char*)W_restriction.data(), W_restriction.size() * sizeof(float));
+        os.write((char*)W_node.data(), W_node.size() * sizeof(float));
     }
 
     void load(std::istream& is) {
-        is.read((char*)W_restriction.data(), W_restriction.size() * sizeof(double));
-        is.read((char*)W_node.data(), W_node.size() * sizeof(double));
+        is.read((char*)W_restriction.data(), W_restriction.size() * sizeof(float));
+        is.read((char*)W_node.data(), W_node.size() * sizeof(float));
     }
 
 private:
     int d_model;
     int d_reasoning;
-    Eigen::MatrixXd W_restriction;
-    Eigen::MatrixXd W_node;
+    Eigen::MatrixXf W_restriction;
+    Eigen::MatrixXf W_node;
 };
 
 #endif // STRE_HPP
+

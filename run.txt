@@ -1,18 +1,24 @@
 #!/bin/bash
-# Alien Intelligence (AI2) Continuation Script
+set -e
 
-echo "Starting Alien-LLM training continuation..."
+echo "[COLAB] Preparing Alien-LLM environment..."
 
-# Download datasets if they don't exist
+# Install dependencies
+apt-get update -y
+apt-get install -y libeigen3-dev cmake build-essential
+
+# Install python dependencies
+pip install -r requirements.txt
+
+# Download datasets
 python3 download_datasets.py
 
-# Build the project if needed
-mkdir -p build
-cd build
-cmake ..
-make
+# Build the project
+mkdir -p build && cd build
+cmake .. -DCMAKE_BUILD_TYPE=Release
+make -j$(nproc)
 
-# Run the model with the resume flag
+# Run the model
+echo "[COLAB] Starting Training..."
 ./alien_llm --resume
 
-echo "Training session complete."
