@@ -70,8 +70,10 @@ int main(int argc, char** argv) {
         
         // Save checkpoint after every epoch
         model.save_checkpoint(checkpoint_path);
+        tokenizer.save_vocab("vocab.txt");
         std::cout << "Epoch " << epoch << " complete. Checkpoint saved." << std::endl;
     }
+
 
 
 

@@ -61,7 +61,28 @@ public:
         return text;
     }
 
+    void save_vocab(const std::string& path) const {
+        std::ofstream of(path);
+        for (int i = 0; i < next_id; ++i) {
+            if (id_to_token.count(i)) {
+                of << i << " " << id_to_token.at(i) << "\n";
+            }
+        }
+    }
+
+    void load_vocab(const std::string& path) {
+        std::ifstream is(path);
+        int id;
+        std::string token;
+        while (is >> id >> token) {
+            vocab[token] = id;
+            id_to_token[id] = token;
+            if (id >= next_id) next_id = id + 1;
+        }
+    }
+
     size_t vocab_size() const { return vocab.size(); }
+
 
 private:
     std::unordered_map<std::string, int> vocab;
