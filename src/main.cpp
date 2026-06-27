@@ -12,11 +12,17 @@ int main(int argc, char** argv) {
     std::cout << "--- Alien Intelligence (AI2) Training Pipeline ---" << std::endl;
 
     bool resume = (argc > 1 && std::string(argv[1]) == "--resume");
+    bool quick_mode = (argc > 1 && std::string(argv[1]) == "--quick") || (argc > 2 && std::string(argv[2]) == "--quick");
+    
     std::string checkpoint_path = "model_checkpoint.bin";
 
     // 1. Data Loading
-    std::string tinystories_text = DataLoader::load_text("datasets/TinyStories-valid.txt", 500000);
-    auto alpaca_raw = DataLoader::load_jsonl("datasets/alpaca_data.jsonl", 500);
+    int data_limit = quick_mode ? 5000 : 500000;
+    std::cout << "[INFO] Loading dataset with limit: " << data_limit << " characters." << std::endl;
+    
+    std::string tinystories_text = DataLoader::load_text("datasets/TinyStories-valid.txt", data_limit);
+    auto alpaca_raw = DataLoader::load_jsonl("datasets/alpaca_data.jsonl", quick_mode ? 50 : 500);
+
 
     // 2. Tokenizer
     if (tinystories_text.empty()) {
@@ -48,18 +54,25 @@ int main(int argc, char** argv) {
 
     Eigen::VectorXf task_emb = Eigen::VectorXf::Random(16);
 
-    // 4. Training (Simulated Loop)
-    std::cout << "Training..." << std::endl;
+    // 4. Training Loop (Epochs)
+    int epochs = 5;
+    std::cout << "Starting training for " << epochs << " epochs..." << std::endl;
+    
     std::vector<int> train_tokens = tokenizer.encode(tinystories_text);
     if (train_tokens.empty()) {
         std::cerr << "[FATAL] Tokenization failed." << std::endl;
         return 1;
     }
-    trainer.train_step(train_tokens, task_emb);
 
-    // Save checkpoint after training
-    model.save_checkpoint(checkpoint_path);
-    std::cout << "Checkpoint saved to " << checkpoint_path << std::endl;
+    for (int epoch = 1; epoch <= epochs; ++epoch) {
+        std::cout << "\n--- Epoch " << epoch << "/" << epochs << " ---" << std::endl;
+        trainer.train_step(train_tokens, task_emb);
+        
+        // Save checkpoint after every epoch
+        model.save_checkpoint(checkpoint_path);
+        std::cout << "Epoch " << epoch << " complete. Checkpoint saved." << std::endl;
+    }
+
 
 
     // 6. Validation & Logging
