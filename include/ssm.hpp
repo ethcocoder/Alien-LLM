@@ -82,21 +82,19 @@ public:
         t++;
         Eigen::MatrixXcf grad_C = grad_out.cast<std::complex<float>>() * state.adjoint();
         
-        // Adam Update for C
+        // Adam Update for C (Vectorized)
         float b1 = 0.9f, b2 = 0.999f, eps = 1e-8f;
         m_C = b1 * m_C + (1.0f - b1) * grad_C;
         v_C = b2 * v_C + (1.0f - b2) * grad_C.array().abs2().matrix();
         
-        Eigen::MatrixXcf m_hat = m_C / (1.0f - std::pow(b1, t));
-        Eigen::MatrixXf v_hat = v_C / (1.0f - std::pow(b2, t));
+        float m_corr = 1.0f - std::pow(b1, t);
+        float v_corr = 1.0f - std::pow(b2, t);
         
-        for(int i=0; i<C.rows(); ++i) {
-            for(int j=0; j<C.cols(); ++j) {
-                C(i,j) -= lr * m_hat(i,j) / (std::sqrt(v_hat(i,j)) + eps);
-            }
-        }
+        // Correct vectorized Adam update for complex matrices
+        C.array() -= lr * (m_C.array() / m_corr) / ((v_C.array() / v_corr).sqrt() + eps);
 
         // Simpler update for others
+
         B -= lr * (state * u.cast<std::complex<float>>().transpose().conjugate()).topRows(d_state);
         D -= lr * grad_out.cwiseProduct(u);
     }

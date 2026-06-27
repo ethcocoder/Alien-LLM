@@ -60,12 +60,11 @@ public:
         float b1 = 0.9f, b2 = 0.999f, eps = 1e-8f;
         m_W = b1 * m_W + (1.0f - b1) * grad;
         v_W = b2 * v_W + (1.0f - b2) * grad.array().square().matrix();
-
         
-        Eigen::MatrixXf m_hat = m_W / (1.0f - std::pow(b1, t));
-        Eigen::MatrixXf v_hat = v_W / (1.0f - std::pow(b2, t));
+        float m_corr = 1.0f - std::pow(b1, t);
+        float v_corr = 1.0f - std::pow(b2, t);
         
-        W_random.array() -= lr * m_hat.array() / (v_hat.array().sqrt() + eps);
+        W_random.array() -= lr * (m_W.array() / m_corr) / ((v_W.array() / v_corr).sqrt() + eps);
     }
 
 
