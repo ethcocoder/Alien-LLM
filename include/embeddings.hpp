@@ -25,6 +25,15 @@ public:
         return result;
     }
 
+    void update(int token_id, const Eigen::VectorXf& grad, float lr) {
+        for (int j = 0; j < k_shards; ++j) {
+            int hash_val = hash_func(token_id, j) % m_hash;
+            shards[j].row(hash_val) -= lr * grad.segment(j * shard_dim, shard_dim).transpose();
+        }
+    }
+
+
+
     void save(std::ostream& os) const {
         os.write((char*)&d_model, sizeof(d_model));
         os.write((char*)&k_shards, sizeof(k_shards));

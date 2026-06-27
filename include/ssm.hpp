@@ -21,7 +21,13 @@ public:
         D = Eigen::VectorXf::Random(d_model);
         
         state = Eigen::VectorXcf::Zero(d_state);
+        
+        // Adam parameters
+        m_C = Eigen::MatrixXcf::Zero(d_model, d_state);
+        v_C = Eigen::MatrixXf::Zero(d_model, d_state);
+        t = 0;
     }
+
 
     Eigen::VectorXf forward(const Eigen::VectorXf& u) {
         // x_{k+1} = Lambda * x_k + B * u_k
@@ -72,7 +78,32 @@ public:
         is.read((char*)D.data(), D.size() * sizeof(float));
     }
 
+    void update(const Eigen::VectorXf& u, const Eigen::VectorXf& grad_out, float lr = 0.001f) {
+        t++;
+        Eigen::MatrixXcf grad_C = grad_out.cast<std::complex<float>>() * state.adjoint();
+        
+        // Adam Update for C
+        float b1 = 0.9f, b2 = 0.999f, eps = 1e-8f;
+        m_C = b1 * m_C + (1.0f - b1) * grad_C;
+        v_C = b2 * v_C + (1.0f - b2) * grad_C.array().abs2().matrix();
+        
+        Eigen::MatrixXcf m_hat = m_C / (1.0f - std::pow(b1, t));
+        Eigen::MatrixXf v_hat = v_C / (1.0f - std::pow(b2, t));
+        
+        for(int i=0; i<C.rows(); ++i) {
+            for(int j=0; j<C.cols(); ++j) {
+                C(i,j) -= lr * m_hat(i,j) / (std::sqrt(v_hat(i,j)) + eps);
+            }
+        }
+
+        // Simpler update for others
+        B -= lr * (state * u.cast<std::complex<float>>().transpose().conjugate()).topRows(d_state);
+        D -= lr * grad_out.cwiseProduct(u);
+    }
+
+
 private:
+
     int d_model;
     int d_state;
     Eigen::VectorXcf Lambda;
@@ -80,7 +111,13 @@ private:
     Eigen::MatrixXcf C;
     Eigen::VectorXf D;
     Eigen::VectorXcf state;
+    
+    // Adam State
+    Eigen::MatrixXcf m_C;
+    Eigen::MatrixXf v_C;
+    int t;
 };
+
 
 #endif // SSM_HPP
 

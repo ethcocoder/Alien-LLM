@@ -69,10 +69,24 @@ extern "C" {
     }
 
     const char* generate_token(ModelInstance* instance, int last_token_id) {
-        Eigen::VectorXf out = instance->model->process_token(last_token_id, *instance->task_emb);
+        Eigen::VectorXf logits = instance->model->process_token(last_token_id, *instance->task_emb);
         
-        // Simplified next token selection logic from main.cpp
-        int next_id = (int)(std::abs(out.sum())) % instance->tokenizer->vocab_size();
+        // Softmax sampling
+        float temp = 0.8f;
+        Eigen::VectorXf probs = (logits.array() / temp).exp();
+        probs /= probs.sum();
+        
+        float r = (float)rand() / (float)RAND_MAX;
+        int next_id = 0;
+        float cumsum = 0;
+        for (int j = 0; j < probs.size(); ++j) {
+            cumsum += probs(j);
+            if (r <= cumsum) {
+                next_id = j;
+                break;
+            }
+        }
+        
         if (next_id < 4) next_id = 4 + (rand() % (instance->tokenizer->vocab_size() - 4));
         
         static std::string last_decoded_token;
@@ -80,6 +94,7 @@ extern "C" {
         
         return last_decoded_token.c_str();
     }
+
 
     int encode_text(ModelInstance* instance, const char* text, int* tokens) {
         std::vector<int> encoded = instance->tokenizer->encode(text);

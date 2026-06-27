@@ -15,12 +15,27 @@ public:
         model.reset();
         ProgressBar pb(tokens.size() - 1, 50, "Training");
         for (size_t i = 0; i < tokens.size() - 1; ++i) {
-            Eigen::VectorXf out = model.process_token(tokens[i], task_emb);
-            float loss = compute_loss(out, tokens[i+1]);
+            Eigen::VectorXf logits = model.process_token(tokens[i], task_emb);
+            int target = tokens[i+1];
+            
+            // 1. Softmax
+            Eigen::VectorXf probs = logits.array().exp() / logits.array().exp().sum();
+            
+            // 2. Cross-Entropy Loss (NLL)
+            float loss = -std::log(std::max(probs(target), 1e-9f));
+            
+            // 3. Backward (Gradient of Cross-Entropy w.r.t Logits)
+            Eigen::VectorXf grad_logits = probs;
+            grad_logits(target) -= 1.0f;
+            
+            // 4. Update Weights
+            model.update(tokens[i], task_emb, grad_logits, lr);
+            
             if (i % 100 == 0) pb.update(i);
         }
         pb.update(tokens.size() - 1);
     }
+
 
 
     void finetune_step(const std::vector<std::pair<std::vector<int>, std::vector<int>>>& instruction_pairs, const Eigen::VectorXf& task_emb) {
@@ -43,12 +58,8 @@ public:
 private:
     AI2Orchestrator& model;
     float lr;
-
-    float compute_loss(const Eigen::VectorXf& out, int target_token_id) {
-        // Cross-entropy loss placeholder
-        return 1.0f / (out.norm() + 1e-6f); // Dummy loss
-    }
 };
 
 #endif // TRAINER_HPP
+
 

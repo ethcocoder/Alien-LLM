@@ -83,17 +83,33 @@ int main(int argc, char** argv) {
         int current_id = prompt_tokens.back();
         ProgressBar pg(20, 30, "Generating");
         for (int i = 0; i < 20; ++i) {
-            Eigen::VectorXf out = model.process_token(current_id, task_emb);
-            int next_id = (int)(std::abs(out.sum())) % tokenizer.vocab_size();
+            Eigen::VectorXf logits = model.process_token(current_id, task_emb);
+            
+            // Softmax with Temperature
+            float temp = 0.8f;
+            Eigen::VectorXf probs = (logits.array() / temp).exp();
+            probs /= probs.sum();
+            
+            // Random weighted selection
+            float r = (float)rand() / (float)RAND_MAX;
+            int next_id = 0;
+            float cumsum = 0;
+            for (int j = 0; j < probs.size(); ++j) {
+                cumsum += probs(j);
+                if (r <= cumsum) {
+                    next_id = j;
+                    break;
+                }
+            }
+            
             if (next_id < 4) next_id = 4 + (rand() % (tokenizer.vocab_size() - 4));
             
             std::string word = tokenizer.decode({next_id});
-            // We'll print the word after the progress bar finishes or use a different style
-            // For now, let's just update the bar and log the word
             log_file << word << " ";
             current_id = next_id;
             pg.update(i + 1);
         }
+
         std::cout << "\n" << std::endl;
 
         log_file << "\n\n";
