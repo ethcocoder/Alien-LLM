@@ -47,6 +47,11 @@ FRONTEND_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "fronten
 
 @app.get("/", response_class=HTMLResponse)
 async def read_root():
+    with open(os.path.join(FRONTEND_DIR, "home.html"), "r") as f:
+        return f.read()
+
+@app.get("/chat", response_class=HTMLResponse)
+async def read_chat():
     with open(os.path.join(FRONTEND_DIR, "index.html"), "r") as f:
         return f.read()
 
@@ -54,6 +59,7 @@ async def read_root():
 async def read_docs():
     with open(os.path.join(FRONTEND_DIR, "documentation.html"), "r") as f:
         return f.read()
+
 
 @app.post("/chat")
 async def chat(request: Request):

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alien-LLM | The Future of Neural Intelligence</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+        
+        :root {
+            --alien-glow: #00ffcc;
+            --alien-purple: #8b5cf6;
+            --bg-deep: #050505;
+        }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background-color: var(--bg-deep);
+            color: white;
+            overflow-x: hidden;
+        }
+
+        .glow-text {
+            text-shadow: 0 0 20px rgba(0, 255, 204, 0.5);
+        }
+
+        .gradient-bg {
+            background: radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.1) 0%, transparent 50%);
+        }
+
+        .neural-grid {
+            mask-image: radial-gradient(circle at center, black, transparent 80%);
+            background-image: linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+
+        .hero-title {
+            font-size: clamp(3rem, 10vw, 8rem);
+            line-height: 0.9;
+            letter-spacing: -0.05em;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.4s ease;
+        }
+
+        .glass-card:hover {
+            border-color: var(--alien-glow);
+            transform: translateY(-10px);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .btn-neural {
+            background: linear-gradient(45deg, #3b82f6, #8b5cf6);
+            padding: 20px 40px;
+            border-radius: 100px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 40px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-neural:hover {
+            transform: scale(1.05);
+            box-shadow: 0 20px 60px rgba(59, 130, 246, 0.5);
+            letter-spacing: 0.05em;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .floating {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .neon-border {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .neon-border::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            border: 2px solid var(--alien-glow);
+            opacity: 0.2;
+            border-radius: inherit;
+        }
+    </style>
+</head>
+<body class="relative">
+
+    <!-- Background Effects -->
+    <div class="fixed inset-0 neural-grid opacity-30 z-0"></div>
+    <div class="fixed top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-600/20 blur-[150px] z-0"></div>
+    <div class="fixed bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-600/20 blur-[150px] z-0"></div>
+
+    <!-- Navigation -->
+    <nav class="relative z-50 h-24 flex items-center justify-between px-10">
+        <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 bg-gradient-to-tr from-cyan-400 to-blue-600 rounded-lg flex items-center justify-center">
+                <i class="fas fa-atom text-white"></i>
+            </div>
+            <span class="font-bold text-xl uppercase tracking-widest text-slate-200">Alien Intelligence</span>
+        </div>
+        <div class="hidden md:flex items-center space-x-10 text-sm font-medium text-slate-400 uppercase tracking-widest">
+            <a href="#" class="hover:text-cyan-400 transition-colors">Architecture</a>
+            <a href="#" class="hover:text-cyan-400 transition-colors">Docs</a>
+            <a href="/chat" class="px-6 py-2 border border-slate-700 rounded-full hover:border-cyan-400 transition-all">Launch Chat</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="h-screen relative z-10 flex flex-col items-center justify-center text-center px-6">
+        <div class="mb-6 px-4 py-1 border border-cyan-400/30 rounded-full text-cyan-400 text-xs font-bold tracking-[0.3em] uppercase bg-cyan-400/5">
+            Beyond Large Language Models
+        </div>
+        <h1 class="hero-title font-bold tracking-tighter mb-10">
+            ALIEN <span class="bg-gradient-to-r from-cyan-400 to-blue-600 bg-clip-text text-transparent">NEURAL</span> STREAM
+        </h1>
+        <p class="max-w-2xl text-slate-400 text-xl md:text-2xl font-light mb-12 leading-relaxed">
+            The first LLM powered by <span class="text-white font-medium">State-Space Layers</span> and <span class="text-white font-medium">Recursive Attention</span>. Redefining intelligence with linear complexity.
+        </p>
+        <a href="/chat" class="btn-neural uppercase tracking-widest">
+            Launch Neural Core
+        </a>
+        
+        <div class="absolute bottom-10 animate-bounce text-slate-500">
+            <i class="fas fa-chevron-down"></i>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="py-32 px-10 relative z-10">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10">
+            <div class="glass-card p-10 rounded-[40px] text-center">
+                <div class="w-20 h-20 bg-cyan-400/10 rounded-3xl flex items-center justify-center mx-auto mb-8">
+                    <i class="fas fa-bolt text-cyan-400 text-3xl"></i>
+                </div>
+                <h3 class="text-2xl font-bold mb-4">SSM Efficiency</h3>
+                <p class="text-slate-400">Forget quadratic scaling. Our architecture maintains speed even at massive context lengths.</p>
+            </div>
+            <div class="glass-card p-10 rounded-[40px] text-center floating">
+                <div class="w-20 h-20 bg-purple-400/10 rounded-3xl flex items-center justify-center mx-auto mb-8">
+                    <i class="fas fa-eye text-purple-400 text-3xl"></i>
+                </div>
+                <h3 class="text-2xl font-bold mb-4">RFA Attention</h3>
+                <p class="text-slate-400">A hybrid recursive mechanism that focuses on what matters, discarding noise in real-time.</p>
+            </div>
+            <div class="glass-card p-10 rounded-[40px] text-center">
+                <div class="w-20 h-20 bg-blue-400/10 rounded-3xl flex items-center justify-center mx-auto mb-8">
+                    <i class="fas fa-microchip text-blue-400 text-xl"></i>
+                </div>
+                <h3 class="text-2xl font-bold mb-4">Dynamic Sharding</h3>
+                <p class="text-slate-400">Memory usage is optimized via CHE-Embedding sharding, fitting on any device.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-20 text-center relative z-10 border-t border-slate-900">
+        <p class="text-slate-600 text-sm tracking-widest uppercase">© 2026 ALIEN INTELLIGENCE LABS • Pushing Boundaries</p>
+    </footer>
+
+</body>
+</html>
