@@ -67,7 +67,14 @@ public:
         return gamma.array() * ((x.array() - mean) / std::sqrt(var + 1e-6f)) + beta.array();
     }
 
+    void reset() {
+        ssm.reset_state();
+        rfa.reset_state();
+        history.clear();
+    }
+
     void update(int token_id, const Eigen::VectorXf& task_emb, const Eigen::VectorXf& grad_logits, float lr) {
+
         // 1. Gradient of W_out
         // dL/dW_out = grad_logits * h_reason^T
         W_out -= lr * grad_logits * last_h_reason.transpose();

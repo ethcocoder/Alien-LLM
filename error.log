@@ -1,20 +1,90 @@
+/content/Alien-LLM# bash run.txt
+[COLAB] Preparing Alien-LLM environment...
+Hit:1 http://archive.ubuntu.com/ubuntu jammy InRelease
+Hit:2 http://security.ubuntu.com/ubuntu jammy-security InRelease                                                           
+Get:3 https://cli.github.com/packages stable InRelease [3,917 B]                                                           
+Hit:4 http://archive.ubuntu.com/ubuntu jammy-updates InRelease                                                             
+Hit:5 http://archive.ubuntu.com/ubuntu jammy-backports InRelease                                                           
+Hit:6 https://cloud.r-project.org/bin/linux/ubuntu jammy-cran40/ InRelease                                                 
+Hit:7 https://r2u.stat.illinois.edu/ubuntu jammy InRelease                                                                 
+Hit:8 https://ppa.launchpadcontent.net/deadsnakes/ppa/ubuntu jammy InRelease      
+Hit:9 https://ppa.launchpadcontent.net/ubuntugis/ppa/ubuntu jammy InRelease
+Fetched 3,917 B in 1s (4,262 B/s)
+Reading package lists... Done
+W: Skipping acquire of configured file 'main/source/Sources' as repository 'https://r2u.stat.illinois.edu/ubuntu jammy InRelease' does not seem to provide it (sources.list entry misspelt?)
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+build-essential is already the newest version (12.9ubuntu3).
+libeigen3-dev is already the newest version (3.4.0-2ubuntu2).
+cmake is already the newest version (3.22.1-1ubuntu1.22.04.2).
+0 upgraded, 0 newly installed, 0 to remove and 62 not upgraded.
+Requirement already satisfied: fastapi in /usr/local/lib/python3.12/dist-packages (from -r requirements.txt (line 1)) (0.136.3)
+Requirement already satisfied: uvicorn in /usr/local/lib/python3.12/dist-packages (from -r requirements.txt (line 2)) (0.49.0)
+Requirement already satisfied: pydantic in /usr/local/lib/python3.12/dist-packages (from -r requirements.txt (line 3)) (2.12.3)
+Requirement already satisfied: python-multipart in /usr/local/lib/python3.12/dist-packages (from -r requirements.txt (line 4)) (0.0.32)
+Requirement already satisfied: requests in /usr/local/lib/python3.12/dist-packages (from -r requirements.txt (line 5)) (2.32.4)
+Requirement already satisfied: numpy in /usr/local/lib/python3.12/dist-packages (from -r requirements.txt (line 6)) (2.0.2)
+Requirement already satisfied: gunicorn in /usr/local/lib/python3.12/dist-packages (from -r requirements.txt (line 7)) (26.0.0)
+Requirement already satisfied: starlette>=0.46.0 in /usr/local/lib/python3.12/dist-packages (from fastapi->-r requirements.txt (line 1)) (0.52.1)
+Requirement already satisfied: typing-extensions>=4.8.0 in /usr/local/lib/python3.12/dist-packages (from fastapi->-r requirements.txt (line 1)) (4.15.0)
+Requirement already satisfied: typing-inspection>=0.4.2 in /usr/local/lib/python3.12/dist-packages (from fastapi->-r requirements.txt (line 1)) (0.4.2)
+Requirement already satisfied: annotated-doc>=0.0.2 in /usr/local/lib/python3.12/dist-packages (from fastapi->-r requirements.txt (line 1)) (0.0.4)
+Requirement already satisfied: click>=7.0 in /usr/local/lib/python3.12/dist-packages (from uvicorn->-r requirements.txt (line 2)) (8.4.1)
+Requirement already satisfied: h11>=0.8 in /usr/local/lib/python3.12/dist-packages (from uvicorn->-r requirements.txt (line 2)) (0.16.0)
+Requirement already satisfied: annotated-types>=0.6.0 in /usr/local/lib/python3.12/dist-packages (from pydantic->-r requirements.txt (line 3)) (0.7.0)
+Requirement already satisfied: pydantic-core==2.41.4 in /usr/local/lib/python3.12/dist-packages (from pydantic->-r requirements.txt (line 3)) (2.41.4)
+Requirement already satisfied: charset_normalizer<4,>=2 in /usr/local/lib/python3.12/dist-packages (from requests->-r requirements.txt (line 5)) (3.4.7)
+Requirement already satisfied: idna<4,>=2.5 in /usr/local/lib/python3.12/dist-packages (from requests->-r requirements.txt (line 5)) (3.18)
+Requirement already satisfied: urllib3<3,>=1.21.1 in /usr/local/lib/python3.12/dist-packages (from requests->-r requirements.txt (line 5)) (2.5.0)
+Requirement already satisfied: certifi>=2017.4.17 in /usr/local/lib/python3.12/dist-packages (from requests->-r requirements.txt (line 5)) (2026.5.20)
+Requirement already satisfied: packaging in /usr/local/lib/python3.12/dist-packages (from gunicorn->-r requirements.txt (line 7)) (26.2)
+Requirement already satisfied: anyio<5,>=3.6.2 in /usr/local/lib/python3.12/dist-packages (from starlette>=0.46.0->fastapi->-r requirements.txt (line 1)) (4.13.0)
+TinyStories-valid.txt already exists.
+alpaca_train.parquet already exists.
+Converting Parquet to JSONL...
+Conversion complete: alpaca_data.jsonl
+-- The C compiler identification is GNU 11.4.0
+-- The CXX compiler identification is GNU 11.4.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Configuring done (0.7s)
+-- Generating done (0.0s)
 -- Build files have been written to: /content/Alien-LLM/build
+[ 16%] Building CXX object CMakeFiles/alien_llm_lib.dir/src/bridge.cpp.o
 [ 33%] Building CXX object CMakeFiles/alien_llm.dir/src/main.cpp.o
-[ 33%] Building CXX object CMakeFiles/alien_llm_lib.dir/src/bridge.cpp.o
-[ 50%] Linking CXX shared library libalien_llm_lib.so
-[ 50%] Built target alien_llm_lib
-[ 66%] Building CXX object CMakeFiles/test_checkpoint.dir/scratch/test_checkpoint.cpp.o
-[ 83%] Linking CXX executable alien_llm
-[ 83%] Built target alien_llm
-[100%] Linking CXX executable test_checkpoint
-[100%] Built target test_checkpoint
-[COLAB] Starting Training...
---- Alien Intelligence (AI2) Training Pipeline ---
-Failed to open file: datasets/TinyStories-valid.txt
-Failed to open file: datasets/alpaca_data.jsonl
-Resuming from checkpoint: model_checkpoint.bin
-[ERROR] Could not open model_checkpoint.bin for reading.
-Training...
-run.txt: line 25:  6888 Segmentation fault      (core dumped) ./alien_llm --resume
-/content/Alien-LLM# 
-[0] 0:bash*               
+In file included from /content/Alien-LLM/src/main.cpp:6:
+/content/Alien-LLM/include/trainer.hpp: In member function ‘void AI2Trainer::train_step(const std::vector<int>&, const VectorXf&)’:
+/content/Alien-LLM/include/trainer.hpp:15:15: error: ‘class AI2Orchestrator’ has no member named ‘reset’
+   15 |         model.reset();
+      |               ^~~~~
+In file included from /content/Alien-LLM/src/main.cpp:6:
+/content/Alien-LLM/include/trainer.hpp: In member function ‘void AI2Trainer::finetune_step(const std::vector<std::pair<std::vector<int>, std::vector<int> > >&, const VectorXf&)’:
+/content/Alien-LLM/include/trainer.hpp:43:19: error: ‘class AI2Orchestrator’ has no member named ‘reset’
+   43 |             model.reset();
+      |                   ^~~~~
+/content/Alien-LLM/include/trainer.hpp:52:17: error: ‘compute_loss’ was not declared in this scope
+   52 |                 compute_loss(out, target); // Placeholder for weight update
+      |                 ^~~~~~~~~~~~
+/content/Alien-LLM/src/bridge.cpp: In function ‘void reset_model(ModelInstance*)’:
+/content/Alien-LLM/src/bridge.cpp:68:26: error: ‘class AI2Orchestrator’ has no member named ‘reset’
+   68 |         instance->model->reset();
+      |                          ^~~~~
+/content/Alien-LLM/src/main.cpp: In function ‘int main(int, char**)’:
+/content/Alien-LLM/src/main.cpp:78:15: error: ‘class AI2Orchestrator’ has no member named ‘reset’
+   78 |         model.reset();
+      |               ^~~~~
+make[2]: *** [CMakeFiles/alien_llm.dir/build.make:79: CMakeFiles/alien_llm.dir/src/main.cpp.o] Error 1
+make[1]: *** [CMakeFiles/Makefile2:125: CMakeFiles/alien_llm.dir/all] Error 2
+make[1]: *** Waiting for unfinished jobs....
+make[2]: *** [CMakeFiles/alien_llm_lib.dir/build.make:79: CMakeFiles/alien_llm_lib.dir/src/bridge.cpp.o] Error 1
+make[1]: *** [CMakeFiles/Makefile2:93: CMakeFiles/alien_llm_lib.dir/all] Error 2
+make: *** [Makefile:91: all] Error 2

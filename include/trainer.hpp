@@ -47,10 +47,18 @@ public:
             }
             // Train on completion
             for (size_t i = 0; i < pair.second.size(); ++i) {
+                int input_token = (i == 0) ? pair.first.back() : pair.second[i-1];
                 int target = pair.second[i];
-                Eigen::VectorXf out = model.process_token(target, task_emb);
-                compute_loss(out, target); // Placeholder for weight update
+                
+                Eigen::VectorXf logits = model.process_token(input_token, task_emb);
+                Eigen::VectorXf probs = logits.array().exp() / logits.array().exp().sum();
+                
+                Eigen::VectorXf grad_logits = probs;
+                grad_logits(target) -= 1.0f;
+                
+                model.update(input_token, task_emb, grad_logits, lr);
             }
+
         }
         std::cout << "Fine-tuning complete." << std::endl;
     }
