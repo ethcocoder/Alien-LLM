@@ -17,13 +17,14 @@ class AI2Orchestrator {
 public:
     AI2Orchestrator(int vocab_size, int d_model) 
         : embedding(vocab_size, d_model),
-          ssm(d_model, 32),
-          rfa(d_model, 16),
-          stre(d_model, 32),
+          ssm(d_model, 128),     // Scaled SSM memory
+          rfa(d_model, 128),     // Scaled Attention features
+          stre(d_model, 128),    // Scaled Reasoning sheaf
           ata(16, d_model),
-          ssog(32, d_model, 8, 2) {
+          ssog(128, d_model, 64, 4) { // Huge Expert Synthesis (64 Experts)
         this->d_model = d_model;
         this->vocab_size = vocab_size;
+
         
         // Output Layer (The "Brain")
         W_out = Eigen::MatrixXf::Random(vocab_size, d_model) * 0.01f;

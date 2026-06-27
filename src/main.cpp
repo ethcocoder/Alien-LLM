@@ -37,14 +37,15 @@ int main(int argc, char** argv) {
         tokenizer.train(pair.second);
     }
 
-    // 3. Model
+    // 3. Model (Upgraded for 10GB RAM)
     if (tokenizer.vocab_size() == 0) {
         std::cerr << "[FATAL] Tokenizer training failed (vocab size 0)." << std::endl;
         return 1;
     }
 
-    int d_model = 256;
+    int d_model = 1024; // Wide Neural Stream
     AI2Orchestrator model(tokenizer.vocab_size(), d_model);
+
     if (resume) {
         std::cout << "Resuming from checkpoint: " << checkpoint_path << std::endl;
         model.load_checkpoint(checkpoint_path);
