@@ -3,152 +3,177 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alien Intelligence (AI2) - Documentation</title>
+    <title>Alien Intelligence | Technical Documentation</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
         
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #0f172a;
-            color: #f8fafc;
+            font-family: 'Space Grotesk', sans-serif;
+            background-color: #050505;
+            color: #e2e8f0;
         }
 
-        .glass {
-            background: rgba(30, 41, 59, 0.7);
+        code { font-family: 'JetBrains Mono', monospace; }
+
+        .sidebar-link {
+            transition: all 0.2s ease;
+            border-left: 2px solid transparent;
+        }
+
+        .sidebar-link:hover, .sidebar-link.active {
+            background: rgba(0, 255, 204, 0.05);
+            border-left-color: #00ffcc;
+            color: #00ffcc;
+        }
+
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.6);
             backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        .sidebar-open {
-            width: 260px;
+        .gradient-text {
+            background: linear-gradient(135deg, #00ffcc, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        .sidebar-closed {
-            width: 0;
-            overflow: hidden;
-        }
-
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #334155;
-            border-radius: 10px;
+        .doc-section {
+            padding-top: 80px;
+            margin-top: -80px;
         }
     </style>
 </head>
-<body class="h-screen flex">
+<body class="flex h-screen overflow-hidden">
 
-    <!-- Sidebar -->
-    <aside id="sidebar" class="sidebar-open glass h-full flex flex-col transition-all duration-300 z-50 fixed lg:relative">
-        <div class="p-6 flex items-center justify-between">
-            <div class="flex items-center space-x-2">
-                <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/20">
-                    <i class="fas fa-brain text-white text-sm"></i>
+    <!-- Desktop Sidebar -->
+    <aside class="hidden lg:flex flex-col w-72 bg-slate-950 border-r border-slate-900 overflow-y-auto">
+        <div class="p-8 border-b border-slate-900 mb-6">
+            <a href="/" class="flex items-center space-x-3">
+                <div class="w-8 h-8 bg-cyan-400 rounded flex items-center justify-center">
+                    <i class="fas fa-atom text-black text-sm"></i>
                 </div>
-                <span class="font-bold text-lg tracking-tight">AI2</span>
-            </div>
-            <button onclick="toggleSidebar()" class="text-slate-400 hover:text-white lg:hidden">
-                <i class="fas fa-bars"></i>
-            </button>
+                <span class="font-bold text-lg tracking-tight">ALIEN-LLM</span>
+            </a>
         </div>
-
-        <nav class="flex-1 px-4 space-y-2">
-            <a href="/" class="flex items-center space-x-3 p-3 rounded-xl hover:bg-slate-800 text-slate-400 hover:text-white transition-colors">
-                <i class="fas fa-comment-dots"></i>
-                <span>Chat Interface</span>
-            </a>
-            <a href="/documentation" class="flex items-center space-x-3 p-3 rounded-xl bg-blue-600/10 text-blue-400 border border-blue-500/20">
-                <i class="fas fa-book"></i>
-                <span>Documentation</span>
-            </a>
+        <nav class="flex-1 px-4 text-sm font-medium text-slate-400">
+            <div class="mb-8">
+                <h4 class="px-4 mb-3 text-xs uppercase tracking-widest text-slate-600 font-bold">Introduction</h4>
+                <a href="#overview" class="sidebar-link block px-4 py-2 rounded-lg">Architecture Overview</a>
+                <a href="#philosophy" class="sidebar-link block px-4 py-2 rounded-lg">Neural Philosophy</a>
+            </div>
+            <div class="mb-8">
+                <h4 class="px-4 mb-3 text-xs uppercase tracking-widest text-slate-600 font-bold">The Core Components</h4>
+                <a href="#ssm" class="sidebar-link block px-4 py-2 rounded-lg">SSM (State Space Model)</a>
+                <a href="#rfa" class="sidebar-link block px-4 py-2 rounded-lg">RFA (Recursive Attention)</a>
+                <a href="#stre" class="sidebar-link block px-4 py-2 rounded-lg">STRE (Sheaf Reasoning)</a>
+            </div>
+            <div class="mb-8">
+                <h4 class="px-4 mb-3 text-xs uppercase tracking-widest text-slate-600 font-bold">Deployment</h4>
+                <a href="#api" class="sidebar-link block px-4 py-2 rounded-lg">Cloud API</a>
+                <a href="#sharding" class="sidebar-link block px-4 py-2 rounded-lg">Memory Sharding</a>
+            </div>
         </nav>
     </aside>
 
     <!-- Main Content -->
-    <main class="flex-1 overflow-y-auto p-8 lg:p-12">
-        <div class="max-w-4xl mx-auto space-y-12">
-            <section>
-                <h1 class="text-4xl font-bold tracking-tighter mb-4 bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
-                    Alien Intelligence Architecture
-                </h1>
-                <p class="text-lg text-slate-400 leading-relaxed">
-                    AI2 is a next-generation large language model architecture designed for extreme efficiency and reasoning capabilities. Unlike traditional Transformers, AI2 leverages State Space Models (SSM) and Recursive Feature Attention (RFA).
-                </p>
-            </section>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="glass p-6 rounded-2xl border border-blue-500/20">
-                    <div class="w-12 h-12 bg-blue-600/20 rounded-xl flex items-center justify-center mb-4">
-                        <i class="fas fa-microchip text-blue-400 text-xl"></i>
-                    </div>
-                    <h3 class="text-xl font-semibold mb-2">SSM Core</h3>
-                    <p class="text-slate-400 text-sm">
-                        Utilizes S4D layers for long-range dependency modeling with linear complexity, enabling massive context windows without the quadratic cost of attention.
-                    </p>
-                </div>
-                <div class="glass p-6 rounded-2xl border border-purple-500/20">
-                    <div class="w-12 h-12 bg-purple-600/20 rounded-xl flex items-center justify-center mb-4">
-                        <i class="fas fa-project-diagram text-purple-400 text-xl"></i>
-                    </div>
-                    <h3 class="text-xl font-semibold mb-2">RFA Mechanism</h3>
-                    <p class="text-slate-400 text-sm">
-                        Recursive Feature Attention provides a hybrid approach to focus on salient information while maintaining a compact state representation.
-                    </p>
-                </div>
+    <main class="flex-1 overflow-y-auto bg-slate-950/50 scroll-smooth">
+        
+        <!-- Top Nav -->
+        <header class="sticky top-0 z-50 glass-panel h-16 flex items-center justify-between px-8">
+            <div class="text-sm text-slate-500">Documentation v2.5.0</div>
+            <div class="flex items-center space-x-6">
+                <a href="https://github.com" class="text-slate-400 hover:text-white transition-colors"><i class="fab fa-github"></i></a>
+                <a href="/chat" class="bg-cyan-400 text-black px-4 py-1.5 rounded-full text-xs font-bold hover:scale-105 transition-all">Go to Interface</a>
             </div>
+        </header>
 
-            <section class="space-y-6">
-                <h2 class="text-2xl font-bold">Key Components</h2>
-                <div class="space-y-4">
-                    <div class="flex items-start space-x-4 p-4 rounded-xl hover:bg-slate-800/50 transition-colors">
-                        <div class="text-blue-500 mt-1"><i class="fas fa-check-circle"></i></div>
-                        <div>
-                            <h4 class="font-medium">CHE Embedding</h4>
-                            <p class="text-slate-400 text-sm">Compact Hashed Embeddings reduce memory footprint by 75% while preserving semantic richness.</p>
-                        </div>
+        <div class="max-w-4xl mx-auto p-12 pb-32">
+            
+            <section id="overview" class="doc-section mb-20 animate-in slide-in-from-bottom duration-700">
+                <h1 class="text-5xl font-bold mb-6 tracking-tighter gradient-text">Neural Stream Architecture</h1>
+                <p class="text-xl text-slate-400 mb-8 leading-relaxed">
+                    Alien-LLM is an experimental hybrid architecture designed to bypass the quadratic bottleneck of traditional Transformers. It introduces a permanent, evolvable neural state.
+                </p>
+                <div class="glass-panel p-8 rounded-3xl mb-8">
+                    <h3 class="text-cyan-400 font-bold mb-4 uppercase tracking-[0.2em] text-xs">Core Innovation</h3>
+                    <p class="text-slate-300">
+                        While Transformers use **Self-Attention** (which gets 4x slower as context doubles), Alien-LLM uses **State-Space Layers** (which stay at the same speed regardless of length).
+                    </p>
+                </div>
+            </section>
+
+            <section id="ssm" class="doc-section mb-20">
+                <h2 class="text-3xl font-bold mb-6 flex items-center">
+                    <span class="w-8 h-8 rounded bg-blue-600/20 flex items-center justify-center mr-4">
+                        <i class="fas fa-layer-group text-blue-400 text-sm"></i>
+                    </span>
+                    SSM: Permanent Recurrent State
+                </h2>
+                <div class="bg-slate-900/50 p-6 rounded-2xl border border-slate-800 mb-6">
+                    <p class="text-slate-400 mb-4 tracking-wide font-light">
+                        The State Space Model (SSM) treats input tokens as a continuous signal. It maintains a hidden state matrix that evolves over time without forgetting previous tokens.
+                    </p>
+                    <pre class="bg-black/50 p-4 rounded-xl text-cyan-500 text-sm overflow-x-auto">
+<code>x_{k+1} = A * x_k + B * u_k
+y_k = C * x_k + D * u_k</code></pre>
+                </div>
+            </section>
+
+            <section id="rfa" class="doc-section mb-20">
+                <h2 class="text-3xl font-bold mb-6 flex items-center">
+                    <span class="w-8 h-8 rounded bg-purple-600/20 flex items-center justify-center mr-4">
+                        <i class="fas fa-microchip text-purple-400 text-sm"></i>
+                    </span>
+                    RFA: Recursive Feature Attention
+                </h2>
+                <p class="text-slate-400 mb-6 font-light">
+                    Recursive Feature Attention (RFA) maps input features into a high-dimensional space and summarizes them using a recurrent relationship. This allows for focus on specific patterns without the massive memory cost of KV-Caches.
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="p-6 glass-panel rounded-2xl">
+                        <h4 class="font-bold text-white mb-2">Linear Complexity</h4>
+                        <p class="text-slate-500 text-sm">Maintains O(L) time complexity where L is sequence length.</p>
                     </div>
-                    <div class="flex items-start space-x-4 p-4 rounded-xl hover:bg-slate-800/50 transition-colors">
-                        <div class="text-blue-500 mt-1"><i class="fas fa-check-circle"></i></div>
-                        <div>
-                            <h4 class="font-medium">ATA Controller</h4>
-                            <p class="text-slate-400 text-sm">Agility Meta-Controller dynamically adapts model parameters based on task complexity.</p>
-                        </div>
-                    </div>
-                    <div class="flex items-start space-x-4 p-4 rounded-xl hover:bg-slate-800/50 transition-colors">
-                        <div class="text-blue-500 mt-1"><i class="fas fa-check-circle"></i></div>
-                        <div>
-                            <h4 class="font-medium">SSOG Synthesizer</h4>
-                            <p class="text-slate-400 text-sm">Sparse Synthesizer of Gated experts handles final token generation with high precision.</p>
-                        </div>
+                    <div class="p-6 glass-panel rounded-2xl">
+                        <h4 class="font-bold text-white mb-2">Dynamic Memory</h4>
+                        <p class="text-slate-500 text-sm">Actively discards irrelevant token data to save RAM.</p>
                     </div>
                 </div>
             </section>
 
-            <footer class="pt-12 border-t border-slate-800 text-center">
-                <p class="text-slate-500 text-sm">© 2026 Alien Intelligence Labs. All rights reserved.</p>
-            </footer>
+            <section id="sharding" class="doc-section mb-20">
+                <h2 class="text-3xl font-bold mb-6">Memory Sharding (CHE)</h2>
+                <p class="text-slate-400 mb-8">
+                    To fit massive vocabularies into small memory footprints, we use **Compact Hashed Embeddings**. Instead of one giant matrix, we use 4 sharded hash tables.
+                </p>
+                <div class="bg-blue-600/5 border border-blue-500/20 p-8 rounded-3xl">
+                    <h4 class="text-blue-400 text-sm font-bold uppercase mb-4">Sharding Logic</h4>
+                    <ul class="space-y-4 text-slate-300">
+                        <li class="flex items-center space-x-3">
+                            <i class="fas fa-check-circle text-blue-500"></i>
+                            <span>Reduced memory footprint by 75%.</span>
+                        </li>
+                        <li class="flex items-center space-x-3">
+                            <i class="fas fa-check-circle text-blue-500"></i>
+                            <span>Universal hash consistency across C++ and Python.</span>
+                        </li>
+                        <li class="flex items-center space-x-3">
+                            <i class="fas fa-check-circle text-blue-500"></i>
+                            <span>Sub-linear lookup speeds.</span>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
         </div>
     </main>
 
-    <script>
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            if (sidebar.classList.contains('sidebar-open')) {
-                sidebar.classList.remove('sidebar-open');
-                sidebar.classList.add('sidebar-closed');
-            } else {
-                sidebar.classList.add('sidebar-open');
-                sidebar.classList.remove('sidebar-closed');
-            }
-        }
-    </script>
+    <footer class="fixed bottom-0 left-0 lg:left-72 right-0 glass-panel p-4 text-[10px] uppercase tracking-[0.2em] text-slate-600 flex justify-center">
+        Alien-LLM Technical Spec • Built for Research and Performance
+    </footer>
+
 </body>
 </html>

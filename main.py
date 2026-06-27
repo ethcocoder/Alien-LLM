@@ -43,22 +43,30 @@ except Exception as e:
 print("---------------------------------------------")
 
 # Serve frontend static files
-FRONTEND_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "frontend")
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+FRONTEND_DIR = os.path.join(BASE_DIR, "frontend")
 
 @app.get("/", response_class=HTMLResponse)
 async def read_root():
-    with open(os.path.join(FRONTEND_DIR, "home.html"), "r") as f:
+    path = os.path.join(FRONTEND_DIR, "home.html")
+    if not os.path.exists(path): return HTMLResponse("Home page file missing", status_code=404)
+    with open(path, "r") as f:
         return f.read()
 
 @app.get("/chat", response_class=HTMLResponse)
 async def read_chat():
-    with open(os.path.join(FRONTEND_DIR, "index.html"), "r") as f:
+    path = os.path.join(FRONTEND_DIR, "index.html")
+    if not os.path.exists(path): return HTMLResponse("Chat page file missing", status_code=404)
+    with open(path, "r") as f:
         return f.read()
 
 @app.get("/documentation", response_class=HTMLResponse)
 async def read_docs():
-    with open(os.path.join(FRONTEND_DIR, "documentation.html"), "r") as f:
+    path = os.path.join(FRONTEND_DIR, "documentation.html")
+    if not os.path.exists(path): return HTMLResponse("Docs page file missing", status_code=404)
+    with open(path, "r") as f:
         return f.read()
+
 
 
 @app.post("/chat")
